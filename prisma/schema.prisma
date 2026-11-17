@@ -1,0 +1,19 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// Marca de arranque de la base. El modelo de dominio se agrega en el siguiente paso.
+model EstadoSistema {
+  id        String   @id @default(cuid())
+  clave     String   @unique
+  valor     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("estado_sistema")
+}

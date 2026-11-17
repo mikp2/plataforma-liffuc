@@ -1,0 +1,21 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: banco-moleculas-db
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: banco
+      POSTGRES_PASSWORD: banco
+      POSTGRES_DB: banco_moleculas
+    volumes:
+      - banco_moleculas_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U banco -d banco_moleculas"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  banco_moleculas_pg:
