@@ -18,3 +18,21 @@ main {
   margin: 0 auto;
   padding: 2rem 1.25rem;
 }
+
+.back-button {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 1100;
+  padding: 10px 16px;
+  color: #f5efde;
+  background: #274736;
+  border: 1px solid #a9bfae;
+  border-radius: 999px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.back-button:hover {
+  background: #368a59;
+}

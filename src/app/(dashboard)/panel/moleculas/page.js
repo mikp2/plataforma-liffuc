@@ -1,8 +1,9 @@
 export default function Page() {
   return (
-    <main>
-      <h1>En construcción</h1>
-      <p>app/(dashboard)/moleculas/page.js</p>
-    </main>
+    <iframe
+      title="Catálogo de moléculas"
+      src="/inicio/moleculas.html"
+      style={{ border: 0, display: "block", width: "100%", height: "100vh" }}
+    />
   );
 }

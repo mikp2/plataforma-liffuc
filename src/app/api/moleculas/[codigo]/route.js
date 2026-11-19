@@ -1,5 +1,63 @@
 import { NextResponse } from "next/server";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { moleculeUpdateSchema, serializeMolecule } from "@/lib/moleculas";
 
-export async function GET() {
-  return NextResponse.json({ ok: true });
+const moleculeWithAttachments = {
+  archivos: { select: { id: true, nombre: true, tipo: true, mimeType: true, tamano: true, createdAt: true } },
+};
+
+export async function GET(_request, context) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+
+  const { codigo } = await context.params;
+  try {
+    const molecule = await prisma.molecula.findUnique({
+      where: { codigo },
+      include: moleculeWithAttachments,
+    });
+    if (!molecule) return NextResponse.json({ message: "No se encontró la molécula." }, { status: 404 });
+    return NextResponse.json(serializeMolecule(molecule));
+  } catch (error) {
+    console.error("No se pudo consultar la molécula:", error);
+    return NextResponse.json({ message: "No se pudo consultar la molécula." }, { status: 500 });
+  }
+}
+
+export async function PATCH(request, context) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+
+  const { codigo } = await context.params;
+  let input;
+  try {
+    input = await request.json();
+  } catch {
+    return NextResponse.json({ message: "El cuerpo de la solicitud debe ser JSON válido." }, { status: 400 });
+  }
+
+  const parsed = moleculeUpdateSchema.safeParse(input);
+  if (!parsed.success) {
+    return NextResponse.json({ message: "Revisa los campos del formulario.", errors: parsed.error.flatten() }, { status: 400 });
+  }
+
+  try {
+    const molecule = await prisma.molecula.update({
+      where: { codigo },
+      data: parsed.data,
+      include: moleculeWithAttachments,
+    });
+    return NextResponse.json(serializeMolecule(molecule));
+  } catch (error) {
+    if (error?.code === "P2025") {
+      return NextResponse.json({ message: "No se encontró la molécula." }, { status: 404 });
+    }
+    if (error?.code === "P2002") {
+      return NextResponse.json({ message: "Ya existe una molécula con ese código." }, { status: 409 });
+    }
+    console.error("No se pudo actualizar la molécula:", error);
+    return NextResponse.json({ message: "No se pudo actualizar la molécula." }, { status: 500 });
+  }
 }

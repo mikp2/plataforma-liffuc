@@ -15,6 +15,7 @@ next-env.d.ts
 # prisma
 /prisma/*.db
 /prisma/*.db-journal
+/data/molecule-files/
 
 # sistema y editor
 .DS_Store

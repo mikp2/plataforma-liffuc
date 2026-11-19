@@ -1,8 +1,9 @@
 export default function Page() {
   return (
-    <main>
-      <h1>En construcción</h1>
-      <p>app/(dashboard)/moleculas/nueva/page.js</p>
-    </main>
+    <iframe
+      title="Registrar molécula"
+      src="/inicio/editar-molecula.html?new=1"
+      style={{ border: 0, display: "block", width: "100%", height: "100vh" }}
+    />
   );
 }

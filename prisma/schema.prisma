@@ -7,7 +7,37 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-/// Marca de arranque de la base. El modelo de dominio se agrega en el siguiente paso.
+enum RolUsuario {
+  ADMIN
+  INVESTIGADOR
+}
+
+enum EstadoMolecula {
+  BORRADOR
+  EN_REVISION
+  APROBADA
+  PUBLICADA
+}
+
+enum TipoArchivoMolecula {
+  IMAGEN
+  PDF
+}
+
+model Usuario {
+  id           String     @id @default(cuid())
+  nombre       String
+  email        String     @unique
+  username     String     @unique
+  passwordHash String
+  rol          RolUsuario @default(INVESTIGADOR)
+  activo       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@map("usuarios")
+}
+
 model EstadoSistema {
   id        String   @id @default(cuid())
   clave     String   @unique
@@ -16,4 +46,43 @@ model EstadoSistema {
   updatedAt DateTime @updatedAt
 
   @@map("estado_sistema")
+}
+
+model Molecula {
+  id              String         @id @default(cuid())
+  codigo          String         @unique
+  nombre          String
+  formula         String?
+  pesoMolecular   Float?
+  especie         String
+  familia         String?
+  origen          String?
+  descripcion     String         @db.Text
+  actividad       String?        @db.Text
+  metodoObtencion String?        @db.Text
+  referencias     String?        @db.Text
+  estado          EstadoMolecula @default(BORRADOR)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  archivos        ArchivoMolecula[]
+
+  @@index([nombre])
+  @@index([especie])
+  @@index([estado])
+  @@map("moleculas")
+}
+
+model ArchivoMolecula {
+  id               String              @id @default(cuid())
+  nombre           String
+  nombreAlmacenado String              @unique
+  tipo             TipoArchivoMolecula
+  mimeType         String
+  tamano           Int
+  moleculaId       String
+  molecula         Molecula            @relation(fields: [moleculaId], references: [id], onDelete: Cascade)
+  createdAt        DateTime            @default(now())
+
+  @@index([moleculaId])
+  @@map("archivos_molecula")
 }

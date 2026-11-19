@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#183c30">
+  <title>LIFFUC-DB | Banco de moléculas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --forest: #183c30;
+      --forest-light: #245641;
+      --sage: #dce8dd;
+      --gold: #c49a46;
+      --paper: #f7f5ed;
+      --white: #fff;
+      --ink: #26352e;
+      --muted: #78837b;
+      --line: #e4e8df;
+      --danger: #a3443a;
+      font-family: "DM Sans", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; color: var(--ink); background: var(--paper); }
+    button, input { font: inherit; }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button { cursor: pointer; }
+
+    .back-button {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      z-index: 20;
+      padding: 9px 14px;
+      color: var(--forest);
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: 0 4px 14px #183c3012;
+    }
+
+    .layout { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      padding: 78px 18px 22px;
+      color: #edf3eb;
+      background: var(--forest);
+    }
+
+    .brand { display: flex; align-items: center; gap: 11px; padding: 0 9px; }
+    .brand-mark {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      color: var(--forest);
+      background: #e9eedf;
+      border-radius: 12px;
+      font-family: "Fraunces", serif;
+      font-size: 23px;
+      font-weight: 600;
+    }
+    .brand-name { font-family: "Fraunces", serif; font-size: 19px; font-weight: 600; }
+    .brand-name small { display: block; margin-top: 2px; color: #b7c8b9; font: 10px "DM Sans", sans-serif; letter-spacing: .12em; }
+    .nav-label { margin: 0 9px 4px; color: #a9bcae; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+    .nav-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-height: 43px;
+      padding: 0 12px;
+      color: #d5e0d5;
+      border-radius: 9px;
+      font-size: 13px;
+      transition: background .15s, color .15s;
+    }
+    .nav-link:hover, .nav-link[aria-current="page"] { color: var(--white); background: #ffffff19; }
+    .nav-icon { display: inline-grid; width: 20px; place-items: center; color: #c6d6c6; font-size: 15px; }
+    .sidebar-bottom { margin-top: auto; padding: 15px 9px 0; border-top: 1px solid #ffffff24; }
+    .user-name { margin: 0 0 3px; font-size: 13px; font-weight: 600; }
+    .user-email { overflow: hidden; margin: 0; color: #b7c8b9; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+    .signout {
+      width: 100%;
+      margin-top: 14px;
+      padding: 9px 11px;
+      color: #f4dfd8;
+      text-align: left;
+      background: transparent;
+      border: 1px solid #ffffff30;
+      border-radius: 8px;
+    }
+    .signout:hover { background: #ffffff12; }
+
+    .main { min-width: 0; padding: 32px clamp(20px, 4vw, 54px) 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 36px; }
+    .breadcrumb { margin: 0 0 7px; color: var(--muted); font-size: 12px; }
+    h1 { margin: 0; color: var(--forest); font-family: "Fraunces", serif; font-size: clamp(26px, 3vw, 35px); font-weight: 500; }
+    .top-actions { display: flex; align-items: center; gap: 10px; }
+    .menu-toggle { display: none; }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 40px;
+      padding: 0 15px;
+      color: var(--white);
+      background: var(--forest-light);
+      border: 1px solid var(--forest-light);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .btn:hover { background: var(--forest); }
+    .btn:disabled { cursor: wait; opacity: .65; }
+
+    .notice { margin: 0 0 22px; padding: 12px 15px; color: var(--forest); background: #e9f1e8; border: 1px solid #d5e4d3; border-radius: 9px; font-size: 13px; }
+    .notice[data-kind="error"] { color: var(--danger); background: #fbefed; border-color: #ebd0cb; }
+    .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 26px; }
+    .stat-card { min-height: 124px; padding: 20px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+    .stat-label { margin: 0 0 14px; color: var(--muted); font-size: 12px; }
+    .stat-value { margin: 0; color: var(--forest); font-family: "Fraunces", serif; font-size: 32px; line-height: 1; }
+    .stat-foot { margin: 9px 0 0; color: var(--muted); font-size: 11px; }
+
+    .catalog { overflow: hidden; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
+    .catalog-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 21px 22px; border-bottom: 1px solid var(--line); }
+    .catalog-head h2 { margin: 0; color: var(--forest); font-family: "Fraunces", serif; font-size: 21px; font-weight: 500; }
+    .catalog-head p { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+    .toolbar { display: flex; align-items: center; gap: 12px; padding: 15px 22px; border-bottom: 1px solid var(--line); }
+    .search { width: min(100%, 370px); min-height: 39px; padding: 0 12px; color: var(--ink); background: #fbfcf9; border: 1px solid var(--line); border-radius: 8px; outline: none; }
+    .search:focus { border-color: #8ca992; box-shadow: 0 0 0 3px #8ca99226; }
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; text-align: left; }
+    th { padding: 12px 17px; color: var(--muted); background: #fafbf8; font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; white-space: nowrap; }
+    td { padding: 15px 17px; border-top: 1px solid #edf0ea; font-size: 12px; }
+    tbody tr:hover { background: #fbfcf9; }
+    .code { color: var(--forest-light); font-family: monospace; font-size: 11px; }
+    .molecule-name { color: var(--ink); font-weight: 600; }
+    .species { color: var(--muted); }
+    .status-pill { display: inline-flex; padding: 4px 9px; color: #526b58; background: #edf3eb; border-radius: 999px; font-size: 10px; white-space: nowrap; }
+    .empty { padding: 42px 18px; color: var(--muted); text-align: center; }
+    .empty strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 13px; }
+    .empty span { font-size: 12px; }
+
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 210px minmax(0, 1fr); }
+      .stats { gap: 10px; }
+      .stat-card { padding: 16px; }
+    }
+    @media (max-width: 680px) {
+      .layout { display: block; }
+      .sidebar { display: none; position: fixed; inset: 0 auto 0 0; z-index: 15; width: min(280px, 84vw); padding-top: 76px; box-shadow: 12px 0 30px #102e2450; }
+      .sidebar.is-open { display: flex; }
+      .main { padding: 78px 16px 30px; }
+      .topbar { align-items: flex-start; margin-bottom: 24px; }
+      .menu-toggle { display: inline-flex; }
+      .stats { grid-template-columns: 1fr; }
+      .stat-card { min-height: 100px; }
+      .catalog-head { align-items: flex-start; flex-direction: column; padding: 18px; }
+      .toolbar { padding: 13px 18px; }
+      th, td { padding: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <button class="back-button" id="back-button" type="button">← Regresar</button>
+
+  <div class="layout">
+    <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
+      <a class="brand" href="/inicio/DB.html">
+        <span class="brand-mark">L</span>
+        <span class="brand-name">LIFFUC-DB<small>BANCO DE MOLÉCULAS</small></span>
+      </a>
+
+      <nav>
+        <p class="nav-label">Panel de trabajo</p>
+        <ul class="nav-list">
+          <li><a class="nav-link" href="/inicio/DB.html" aria-current="page"><span class="nav-icon">⌂</span>Resumen</a></li>
+          <li><a class="nav-link" href="/panel/moleculas"><span class="nav-icon">◈</span>Moléculas</a></li>
+          <li><a class="nav-link" href="/panel/especies"><span class="nav-icon">❋</span>Especies</a></li>
+          <li><a class="nav-link" href="/panel/aprobaciones"><span class="nav-icon">✓</span>Aprobaciones</a></li>
+          <li><a class="nav-link" href="/panel/historial"><span class="nav-icon">◷</span>Historial</a></li>
+          <li><a class="nav-link" href="/panel/estadisticas"><span class="nav-icon">▥</span>Estadísticas</a></li>
+          <li><a class="nav-link" href="/panel/usuarios"><span class="nav-icon">◎</span>Usuarios</a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-bottom">
+        <p class="user-name" id="user-name">Verificando sesión…</p>
+        <p class="user-email" id="user-email"></p>
+        <button class="signout" id="signout" type="button">Cerrar sesión</button>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <p class="breadcrumb">LIFFUC-DB / Resumen</p>
+          <h1>Banco de moléculas</h1>
+        </div>
+        <div class="top-actions">
+          <button class="btn menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">Menú</button>
+          <button class="btn" id="refresh" type="button">Actualizar</button>
+          <a class="btn" href="/panel/moleculas/nueva">+ Nueva molécula</a>
+        </div>
+      </header>
+
+      <div class="notice" id="notice" role="status" aria-live="polite">Comprobando acceso y cargando el banco…</div>
+
+      <section class="stats" aria-label="Resumen del banco">
+        <article class="stat-card">
+          <p class="stat-label">Moléculas registradas</p>
+          <p class="stat-value" id="molecule-count">—</p>
+          <p class="stat-foot">Registros disponibles en el banco</p>
+        </article>
+        <article class="stat-card">
+          <p class="stat-label">Especies relacionadas</p>
+          <p class="stat-value" id="species-count">—</p>
+          <p class="stat-foot">Especies distintas en los registros</p>
+        </article>
+        <article class="stat-card">
+          <p class="stat-label">Pendientes de revisión</p>
+          <p class="stat-value" id="pending-count">—</p>
+          <p class="stat-foot">Registros en espera de aprobación</p>
+        </article>
+      </section>
+
+      <section class="catalog" aria-labelledby="catalog-title">
+        <div class="catalog-head">
+          <div>
+            <h2 id="catalog-title">Catálogo de moléculas</h2>
+            <p>Consulta y filtra los compuestos registrados en LIFFUC-DB.</p>
+          </div>
+          <a class="btn" href="/panel/moleculas">Ver catálogo</a>
+        </div>
+        <div class="toolbar">
+          <input class="search" id="search" type="search" placeholder="Buscar por código, molécula o especie…" aria-label="Buscar moléculas">
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Molécula</th>
+                <th scope="col">Especie</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Actualización</th>
+              </tr>
+            </thead>
+            <tbody id="molecule-rows">
+              <tr><td class="empty" colspan="5"><strong>Cargando registros…</strong><span>Espera un momento.</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="/inicio/DB.js" defer></script>
+</body>
+</html>

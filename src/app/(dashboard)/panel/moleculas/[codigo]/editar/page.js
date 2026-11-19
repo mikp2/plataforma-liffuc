@@ -1,8 +1,12 @@
-export default function Page() {
+export default async function Page({ params }) {
+  const { codigo } = await params;
+  const editorUrl = `/inicio/editar-molecula.html?codigo=${encodeURIComponent(codigo)}`;
+
   return (
-    <main>
-      <h1>En construcción</h1>
-      <p>app/(dashboard)/moleculas/[codigo]/editar/page.js</p>
-    </main>
+    <iframe
+      title="Editar molécula"
+      src={editorUrl}
+      style={{ border: 0, display: "block", width: "100%", height: "100vh" }}
+    />
   );
 }
