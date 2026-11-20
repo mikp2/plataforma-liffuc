@@ -1,8 +1,6 @@
-export default function Page() {
-  return (
-    <main>
-      <h1>En construcción</h1>
-      <p>app/(dashboard)/moleculas/[codigo]/page.js</p>
-    </main>
-  );
+import MoleculeDetailPage from "@/app/ui/molecule-detail-page";
+
+export default async function Page({ params }) {
+  const { codigo } = await params;
+  return <MoleculeDetailPage codigo={codigo} />;
 }

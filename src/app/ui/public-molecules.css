@@ -1,0 +1,47 @@
+.public-catalog { width: min(100%, 1320px); max-width: 1320px; min-height: 100vh; margin: auto; padding: 27px clamp(18px, 4vw, 52px) 48px; color: #26342d; background: #f6f7f3; font-family: "DM Sans", sans-serif; }
+.public-catalog-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 16px; border-bottom: 1px solid #e4e9e3; }
+.public-brand { color: #193b2e; font: 600 19px "Fraunces", Georgia, serif; text-decoration: none; }
+.public-brand span { color: #a77a2e; }
+.public-catalog-header nav { display: flex; align-items: center; gap: 20px; color: #637269; font-size: 11px; }
+.public-catalog-header nav a { text-decoration: none; }
+.public-catalog-header nav a:hover { color: #244a39; }
+.public-catalog-header nav .public-login-link { padding: 8px 11px; color: #244a39; border: 1px solid #d7dfd7; border-radius: 6px; }
+.public-heading { margin: 29px 0 22px; }
+.public-heading p { margin: 0 0 7px; color: #78827b; font-size: 10px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; }
+.public-heading h1 { margin: 0; color: #193b2e; font: 500 clamp(28px, 3vw, 36px)/1.2 "Fraunces", Georgia, serif; }
+.public-heading span { display: block; margin-top: 7px; color: #78827b; font-size: 12px; }
+.public-controls { display: flex; gap: 9px; }
+.public-controls label:first-child { flex: 1; }
+.public-controls input, .public-controls select { width: 100%; min-height: 39px; padding: 0 11px; color: #34443a; background: #fff; border: 1px solid #dfe6df; border-radius: 6px; font: 11px "DM Sans", sans-serif; }
+.public-controls input:focus, .public-controls select:focus { outline: 3px solid #244a3928; border-color: #8ca992; }
+.public-reset { padding: 0 9px; color: #637269; background: transparent; border: 0; cursor: pointer; font-size: 10px; }
+.public-count { margin: 12px 0; color: #78827b; font-size: 10px; }
+.public-molecule-grid, .public-species-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 11px; }
+.public-molecule-card, .public-species-card { display: flex; min-height: 166px; flex-direction: column; padding: 15px; color: inherit; background: #fff; border: 1px solid #e4e9e3; border-radius: 8px; box-shadow: 0 2px 8px #17302208; text-align: left; text-decoration: none; transition: transform .16s, border-color .16s, box-shadow .16s; }
+.public-molecule-card:hover, .public-species-card:hover { transform: translateY(-2px); border-color: #cbd8cd; box-shadow: 0 8px 22px #17302212; }
+.public-code { color: #718078; font: 10px monospace; }
+.public-molecule-card h2 { margin: 12px 0 4px; color: #193b2e; font: 500 18px "Fraunces", Georgia, serif; }
+.public-molecule-card > p { margin: 0; color: #78827b; font-size: 11px; }
+.public-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 11px; }
+.public-tags span { padding: 4px 7px; color: #627068; background: #f3f5f2; border-radius: 4px; font-size: 9px; }
+.public-molecule-card > small { display: flex; justify-content: space-between; margin-top: auto; padding-top: 12px; color: #244a39; font-size: 10px; font-weight: 600; }
+.public-species-card { min-height: 125px; justify-content: center; gap: 8px; cursor: pointer; }
+.public-species-card span, .public-species-card small { color: #78827b; font-size: 10px; }
+.public-species-card strong { color: #193b2e; font: 500 17px "Fraunces", Georgia, serif; }
+.public-state { grid-column: 1 / -1; padding: 30px 16px; color: #78827b; background: #fff; border: 1px solid #e4e9e3; border-radius: 8px; font-size: 12px; text-align: center; }
+.public-error { color: #a3443a; background: #fbefed; border-color: #ebd0cb; }
+.public-detail { max-width: 860px; margin: 23px auto 0; padding: clamp(20px, 4vw, 36px); background: #fff; border: 1px solid #e4e9e3; border-radius: 10px; }
+.public-back { display: inline-block; margin-top: 18px; color: #52635a; font-size: 11px; text-decoration: none; }
+.public-back:hover { color: #193b2e; }
+.public-detail > h1 { margin: 7px 0 4px; color: #193b2e; font: 500 clamp(26px, 4vw, 36px) "Fraunces", Georgia, serif; }
+.public-detail-species { margin: 0; color: #78827b; font-size: 12px; }
+.public-detail-facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 22px 0; padding: 14px 0; border-top: 1px solid #edf0ec; border-bottom: 1px solid #edf0ec; }
+.public-detail-facts div { display: grid; gap: 5px; }
+.public-detail-facts span { color: #78827b; font-size: 9px; text-transform: uppercase; }
+.public-detail-facts strong { color: #34443a; font-size: 11px; font-weight: 600; }
+.public-detail-section { margin: 18px 0 0; }
+.public-detail-section h2 { margin: 0 0 6px; color: #193b2e; font: 500 17px "Fraunces", Georgia, serif; }
+.public-detail-section p { margin: 0; color: #52635a; font-size: 12px; line-height: 1.7; white-space: pre-line; }
+.public-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; }
+@media(max-width:600px){.public-catalog{padding:18px 13px 30px}.public-catalog-header{align-items:flex-start;flex-direction:column}.public-catalog-header nav{width:100%;justify-content:space-between;gap:8px}.public-controls{flex-direction:column}.public-controls label:first-child{flex:auto}.public-molecule-grid,.public-species-grid{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){.public-molecule-card,.public-species-card{transition:none}}

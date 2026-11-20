@@ -7,6 +7,7 @@ const sortSelect = document.getElementById("sort");
 const resultCount = document.getElementById("result-count");
 const demoNotice = document.getElementById("demo-notice");
 let molecules = [];
+const requestedSpecies = new URLSearchParams(window.location.search).get("especie");
 
 function showMessage(text, kind = "info") {
   message.textContent = text;
@@ -39,6 +40,7 @@ function refreshSpeciesFilter() {
   speciesFilter.replaceChildren(new Option("Todas las especies", ""));
   for (const name of species) speciesFilter.add(new Option(name, name));
   if (species.includes(selected)) speciesFilter.value = selected;
+  else if (species.includes(requestedSpecies)) speciesFilter.value = requestedSpecies;
 }
 
 function getVisibleMolecules() {

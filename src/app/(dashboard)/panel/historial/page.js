@@ -1,8 +1,6 @@
+import PanelDataPage from "@/app/ui/panel-data-page";
+import "@/app/ui/workspace.css";
+
 export default function Page() {
-  return (
-    <main>
-      <h1>En construcción</h1>
-      <p>app/(dashboard)/historial/page.js</p>
-    </main>
-  );
+  return <PanelDataPage view="historial" />;
 }
