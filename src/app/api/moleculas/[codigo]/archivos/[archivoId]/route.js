@@ -1,20 +1,23 @@
-import { getServerSession } from "next-auth";
 import { readFile } from "node:fs/promises";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth";
+import { authorizeRequest, MOLECULE_EDITOR_ROLES } from "@/lib/authorization";
 import { getMoleculeFilePath, removeStoredMoleculeFile } from "@/lib/molecule-files";
 import { prisma } from "@/lib/prisma";
 
 export async function GET(_request, context) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest();
+  if (response) return response;
 
   const { codigo, archivoId } = await context.params;
   try {
     const attachment = await prisma.archivoMolecula.findFirst({
       where: { id: archivoId, molecula: { codigo } },
+      include: { molecula: { select: { estado: true } } },
     });
     if (!attachment) return NextResponse.json({ message: "No se encontró el archivo." }, { status: 404 });
+    if (user.rol === "VISITANTE" && attachment.molecula.estado !== "PUBLICADA") {
+      return NextResponse.json({ message: "No se encontró el archivo." }, { status: 404 });
+    }
 
     const contents = await readFile(getMoleculeFilePath(attachment.nombreAlmacenado));
     const filename = encodeURIComponent(attachment.nombre).replace(/['()*]/g, (char) =>
@@ -37,16 +40,20 @@ export async function GET(_request, context) {
 }
 
 export async function DELETE(_request, context) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest(MOLECULE_EDITOR_ROLES);
+  if (response) return response;
 
   const { codigo, archivoId } = await context.params;
   try {
     const attachment = await prisma.archivoMolecula.findFirst({
       where: { id: archivoId, molecula: { codigo } },
+      include: { molecula: { select: { id: true } } },
     });
     if (!attachment) return NextResponse.json({ message: "No se encontró el archivo." }, { status: 404 });
 
+    if (user.rol === "INVESTIGADOR") {
+      await prisma.molecula.update({ where: { id: attachment.molecula.id }, data: { estado: "EN_REVISION" } });
+    }
     await prisma.archivoMolecula.delete({ where: { id: archivoId } });
     try {
       await removeStoredMoleculeFile(attachment.nombreAlmacenado);

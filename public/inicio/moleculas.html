@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-i18n-title="Moléculas | LIFFUC-DB">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -11,19 +11,28 @@
   <link rel="stylesheet" href="/inicio/moleculas.css">
 </head>
 <body>
+  <label class="language-selector">
+    <span data-i18n="Idioma">Idioma</span>
+    <select data-language-selector aria-label="Idioma" data-i18n-aria-label="Idioma">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="pt">Português</option>
+      <option value="it">Italiano</option>
+    </select>
+  </label>
   <main class="page">
     <header class="page-header">
       <div>
-        <p class="eyebrow"><a href="/inicio/DB.html">LIFFUC-DB</a><span aria-hidden="true">/</span> Catálogo</p>
-        <h1>Moléculas</h1>
-        <p class="page-description">Explora y administra los compuestos registrados en el banco.</p>
+        <p class="eyebrow"><a href="/inicio/DB.html">LIFFUC-DB</a><span aria-hidden="true">/</span> <span data-i18n="Catálogo de moléculas">Catálogo</span></p>
+        <h1 data-i18n="Moléculas">Moléculas</h1>
+        <p class="page-description" data-i18n="Explora y administra los compuestos registrados en el banco.">Explora y administra los compuestos registrados en el banco.</p>
       </div>
       <div class="header-actions">
-        <button class="button button--quiet" id="refresh" type="button" aria-label="Actualizar catálogo">
-          <span aria-hidden="true">↻</span> Actualizar
+        <button class="button button--quiet" id="refresh" type="button" aria-label="Actualizar catálogo" data-i18n-aria-label="Actualizar catálogo">
+          <span aria-hidden="true">↻</span> <span data-i18n="Actualizar">Actualizar</span>
         </button>
         <a class="button button--primary" href="/panel/moleculas/nueva">
-          <span aria-hidden="true">＋</span> Nueva molécula
+          <span aria-hidden="true">＋</span> <span data-i18n="Nueva molécula">Nueva molécula</span>
         </a>
       </div>
     </header>
@@ -34,14 +43,14 @@
       <div class="catalog-toolbar">
         <label class="search-field">
           <span class="search-icon" aria-hidden="true">⌕</span>
-          <input id="search" type="search" placeholder="Buscar por nombre, código, fórmula o especie…" aria-label="Buscar moléculas">
+          <input id="search" type="search" placeholder="Buscar por nombre, código, fórmula o especie…" data-i18n-placeholder="Buscar por nombre, código, fórmula o especie…" aria-label="Buscar moléculas" data-i18n-aria-label="Buscar moléculas">
           <kbd aria-hidden="true">/</kbd>
         </label>
         <div class="filters">
           <label class="filter-control">
-            <span class="visually-hidden">Filtrar por estado</span>
-            <select id="state-filter" aria-label="Filtrar por estado">
-              <option value="">Todos los estados</option>
+            <span class="visually-hidden" data-i18n="Filtrar por estado">Filtrar por estado</span>
+            <select id="state-filter" aria-label="Filtrar por estado" data-i18n-aria-label="Filtrar por estado">
+              <option value="" data-i18n="Todos los estados">Todos los estados</option>
               <option value="BORRADOR">Borrador</option>
               <option value="EN_REVISION">En revisión</option>
               <option value="APROBADA">Aprobada</option>
@@ -49,52 +58,61 @@
             </select>
           </label>
           <label class="filter-control">
-            <span class="visually-hidden">Filtrar por especie</span>
-            <select id="species-filter" aria-label="Filtrar por especie">
-              <option value="">Todas las especies</option>
+            <span class="visually-hidden" data-i18n="Filtrar por especie">Filtrar por especie</span>
+            <select id="species-filter" aria-label="Filtrar por especie" data-i18n-aria-label="Filtrar por especie">
+              <option value="" data-i18n="Todas las especies">Todas las especies</option>
             </select>
           </label>
           <label class="filter-control">
-            <span class="visually-hidden">Ordenar moléculas</span>
-            <select id="sort" aria-label="Ordenar moléculas">
-              <option value="updated-desc">Más recientes</option>
-              <option value="name-asc">Nombre A–Z</option>
-              <option value="name-desc">Nombre Z–A</option>
-              <option value="code-asc">Código A–Z</option>
+            <span class="visually-hidden" data-i18n="Ordenar moléculas">Ordenar moléculas</span>
+            <select id="sort" aria-label="Ordenar moléculas" data-i18n-aria-label="Ordenar moléculas">
+              <option value="updated-desc" data-i18n="Más recientes">Más recientes</option>
+              <option value="name-asc" data-i18n="Nombre A–Z">Nombre A–Z</option>
+              <option value="name-desc" data-i18n="Nombre Z–A">Nombre Z–A</option>
+              <option value="code-asc" data-i18n="Código A–Z">Código A–Z</option>
               <option value="weight-asc">Peso molecular ↑</option>
               <option value="weight-desc">Peso molecular ↓</option>
             </select>
           </label>
-          <button class="button button--text" id="clear" type="button">Limpiar</button>
+          <button class="button button--text" id="clear" type="button" data-i18n="Limpiar">Limpiar</button>
         </div>
       </div>
 
       <div class="catalog-meta">
-        <p id="result-count" aria-live="polite">Cargando catálogo…</p>
+        <p id="result-count" aria-live="polite" data-i18n="Cargando catálogo…">Cargando catálogo…</p>
         <span class="demo-note" id="demo-notice" hidden>Incluye registros identificados como datos de prueba.</span>
       </div>
 
       <div class="molecule-grid" id="molecule-rows" aria-live="polite" aria-busy="true">
-        <div class="empty-state"><span class="loading-mark" aria-hidden="true"></span><strong>Cargando moléculas</strong></div>
+        <div class="empty-state"><span class="loading-mark" aria-hidden="true"></span><strong data-i18n="Cargando catálogo">Cargando moléculas</strong></div>
       </div>
     </section>
   </main>
+
+  <footer class="account-footer" id="account-footer" hidden>
+    <div>
+      <strong id="account-name"></strong>
+      <span id="account-email"></span>
+    </div>
+    <button class="button button--quiet" id="signout" type="button" data-i18n="Cerrar sesión">Cerrar sesión</button>
+  </footer>
 
   <dialog class="detail-dialog" id="molecule-detail" aria-labelledby="detail-title">
     <div class="detail-header">
       <div>
         <p class="eyebrow" id="detail-code"></p>
-        <h2 id="detail-title">Ficha de molécula</h2>
+        <h2 id="detail-title" data-i18n="Ficha de molécula">Ficha de molécula</h2>
       </div>
-      <button class="icon-button" id="close-detail" type="button" aria-label="Cerrar ficha">×</button>
+      <button class="icon-button" id="close-detail" type="button" aria-label="Cerrar ficha" data-i18n-aria-label="Cerrar ficha">×</button>
     </div>
     <div class="detail-content" id="detail-content"></div>
     <div class="detail-footer">
-      <button class="button button--quiet" id="close-detail-footer" type="button">Cerrar</button>
-      <a class="button button--primary" id="detail-edit" href="#">Editar molécula</a>
+      <button class="button button--quiet" id="close-detail-footer" type="button" data-i18n="Cerrar">Cerrar</button>
+      <a class="button button--primary" id="detail-edit" href="#" hidden data-i18n="Editar molécula">Editar molécula</a>
     </div>
   </dialog>
 
+  <script src="/inicio/i18n.js" defer></script>
   <script src="/inicio/moleculas.js" defer></script>
 </body>
 </html>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useI18n } from "./i18n";
 import "@/app/ui/workspace.css";
 
 const stateLabels = {
@@ -12,14 +13,15 @@ const stateLabels = {
   PUBLICADA: "Publicada",
 };
 
-function formatDate(value) {
+function formatDate(value, locale) {
   if (!value) return "—";
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" }).format(date);
+  return Number.isNaN(date.getTime()) ? "—" : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
-export default function MoleculeDetailPage({ codigo }) {
+export default function MoleculeDetailPage({ codigo, canEdit }) {
   const router = useRouter();
+  const { t, locale } = useI18n();
   const [molecule, setMolecule] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
@@ -36,48 +38,48 @@ export default function MoleculeDetailPage({ codigo }) {
         if (!response.ok) throw new Error(payload.message || "No se pudo cargar la molécula.");
         if (active) setMolecule(payload);
       })
-      .catch((loadError) => { if (active) setError(loadError.message || "No se pudo cargar la molécula."); })
+      .catch((loadError) => { if (active) setError(t(loadError.message || "No se pudo cargar la molécula.")); })
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [codigo, router]);
+  }, [codigo, router, t]);
 
   return (
     <main className="workspace-page">
       <header className="workspace-header">
         <div>
-          <p className="workspace-breadcrumb"><Link href="/inicio/DB.html">LIFFUC-DB</Link> / <Link href="/panel/moleculas">Moléculas</Link></p>
-          <h1>{molecule?.nombre || "Ficha de molécula"}</h1>
-          <p className="workspace-description">{molecule ? `${molecule.codigo} · ${stateLabels[molecule.estado] || molecule.estado}` : "Información del compuesto"}</p>
+          <p className="workspace-breadcrumb"><Link href="/inicio/DB.html">LIFFUC-DB</Link> / <Link href="/panel/moleculas">{t("Moléculas")}</Link></p>
+          <h1>{molecule?.nombre || t("Ficha de molécula")}</h1>
+          <p className="workspace-description">{molecule ? `${molecule.codigo} · ${t(stateLabels[molecule.estado] || molecule.estado)}` : t("Información del compuesto")}</p>
         </div>
-        {molecule && <Link className="workspace-button workspace-button--primary" href={`/panel/moleculas/${encodeURIComponent(molecule.codigo)}/editar`}>Editar ficha</Link>}
+        {canEdit && molecule && <Link className="workspace-button workspace-button--primary" href={`/panel/moleculas/${encodeURIComponent(molecule.codigo)}/editar`}>{t("Editar ficha")}</Link>}
       </header>
-      {loading && <p className="workspace-empty">Cargando ficha…</p>}
+      {loading && <p className="workspace-empty">{t("Cargando ficha…")}</p>}
       {error && <p className="workspace-message is-error" role="alert">{error}</p>}
       {molecule && (
         <>
           <section className="workspace-card molecule-facts">
             {[
-              ["Fórmula molecular", molecule.formula],
-              ["Peso molecular", molecule.pesoMolecular ? `${molecule.pesoMolecular} g/mol` : ""],
-              ["Especie", molecule.especie],
-              ["Familia química", molecule.familia],
-              ["Procedencia", molecule.origen],
-              ["Última actualización", formatDate(molecule.updatedAt)],
+              [t("Fórmula molecular"), molecule.formula],
+              [t("Peso molecular"), molecule.pesoMolecular ? `${molecule.pesoMolecular} g/mol` : ""],
+              [t("Especie"), molecule.especie],
+              [t("Familia química"), molecule.familia],
+              [t("Procedencia"), molecule.origen],
+              [t("Actualizada"), formatDate(molecule.updatedAt, locale)],
             ].filter(([, value]) => value).map(([label, value]) => (
               <div key={label}><span>{label}</span><strong>{value}</strong></div>
             ))}
           </section>
           {[
-            ["Descripción", molecule.descripcion],
-            ["Actividad biológica", molecule.actividad],
-            ["Método de obtención", molecule.metodoObtencion],
-            ["Referencias", molecule.referencias],
+            [t("Descripción"), molecule.descripcion],
+            [t("Actividad biológica"), molecule.actividad],
+            [t("Método de obtención"), molecule.metodoObtencion],
+            [t("Referencias"), molecule.referencias],
           ].filter(([, value]) => value).map(([label, value]) => (
             <section className="workspace-card molecule-text-section" key={label}><h2>{label}</h2><p>{value}</p></section>
           ))}
           {molecule.archivos?.length > 0 && (
             <section className="workspace-card molecule-text-section">
-              <h2>Archivos asociados</h2>
+              <h2>{t("Archivos asociados")}</h2>
               <div className="molecule-attachments">
                 {molecule.archivos.map((file) => (
                   <a key={file.id} href={file.url} target="_blank" rel="noopener noreferrer">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-i18n-title="LIFFUC · Laboratorio de Investigaciones Fitoquímicas y Farmacológicas">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -64,6 +64,14 @@ img,svg{display:block;max-width:100%;}
 ul{list-style:none;}
 
 :focus-visible{outline:2px solid var(--gold);outline-offset:3px;border-radius:3px;}
+
+.language-selector{
+    position:fixed;top:76px;right:16px;z-index:1200;
+    display:flex;align-items:center;gap:7px;min-height:38px;padding:0 10px;
+    color:var(--green-900);background:var(--ivory);border:1px solid var(--line);
+    border-radius:100px;box-shadow:var(--shadow-sm);font-size:12px;font-weight:600;
+}
+.language-selector select{max-width:min(34vw,130px);min-height:34px;padding:0 18px 0 0;color:inherit;background:transparent;border:0;font:inherit;}
 
 .skip-link{
     position:absolute;left:16px;top:-60px;z-index:2000;
@@ -438,6 +446,8 @@ footer.site{
     .foot-bottom{flex-direction:column;align-items:flex-start;}
 }
 @media(max-width:520px){
+    .language-selector{top:72px;right:12px;min-height:36px;}
+    .language-selector>span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;}
     .hero-actions .btn,.cta-band .btn{width:100%;justify-content:center;}
     .hero-plate{padding:24px 22px 20px;}
     .db-row{grid-template-columns:72px 1fr;}
@@ -458,15 +468,24 @@ footer.site{
 <noscript><style>.reveal{opacity:1;transform:none;}.draw-line{stroke-dashoffset:0;}.fade-node{opacity:1;}</style></noscript>
 </head>
 <body>
-    <a href="#contenido" class="skip-link">Saltar al contenido</a>
+    <label class="language-selector">
+        <span data-i18n="Idioma">Idioma</span>
+        <select data-language-selector aria-label="Idioma" data-i18n-aria-label="Idioma">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="it">Italiano</option>
+        </select>
+    </label>
+    <a href="#contenido" class="skip-link" data-i18n="Saltar al contenido">Saltar al contenido</a>
 
-    <button class="page-back-button" id="backButton" type="button" aria-label="Regresar a la página anterior" hidden>
+    <button class="page-back-button" id="backButton" type="button" aria-label="Regresar a la página anterior" data-i18n-aria-label="Regresar a la página anterior" hidden>
         ← Regresar
     </button>
 
 <header class="site">
-    <nav class="bar wrap" aria-label="Navegación principal">
-        <a href="#" class="brand" aria-label="LIFFUC, Universidad de Cartagena — inicio">
+    <nav class="bar wrap" aria-label="Navegación principal" data-i18n-aria-label="Navegación principal">
+        <a href="#" class="brand" aria-label="LIFFUC, Universidad de Cartagena — inicio" data-i18n-aria-label="LIFFUC, Universidad de Cartagena — inicio">
             <svg class="mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
                 <path d="M20 4C20 4 9 12 9 22C9 29 14 34 20 34C26 34 31 29 31 22C31 12 20 4 20 4Z" stroke="#B58A3C" stroke-width="1.6"/>
                 <path d="M20 34V13" stroke="#1F4D3E" stroke-width="1.6"/>
@@ -474,19 +493,19 @@ footer.site{
                 <path d="M20 25C20 25 26 23 27 18" stroke="#1F4D3E" stroke-width="1.4" stroke-linecap="round"/>
             </svg>
             <span class="brand-text">LIFFUC
-                <small>Universidad de Cartagena</small>
+                <small data-i18n="Universidad de Cartagena">Universidad de Cartagena</small>
             </span>
         </a>
         <ul class="nav-links" id="navLinks">
-            <li><a href="#conocenos">Nosotros</a></li>
-            <li><a href="#lineas">Líneas de investigación</a></li>
+            <li><a href="#conocenos" data-i18n="Nosotros">Nosotros</a></li>
+            <li><a href="#lineas" data-i18n="Líneas de investigación">Líneas de investigación</a></li>
             <li><a href="#liffuc-db">LIFFUC-DB</a></li>
-            <li><a href="#publicaciones">Publicaciones</a></li>
-            <li><a href="#equipo">Equipo</a></li>
-            <li><a href="#contacto">Contacto</a></li>
+            <li><a href="#publicaciones" data-i18n="Publicaciones">Publicaciones</a></li>
+            <li><a href="#equipo" data-i18n="Equipo">Equipo</a></li>
+            <li><a href="#contacto" data-i18n="Contacto">Contacto</a></li>
         </ul>
-        <a href="/login" class="nav-cta">Ingresar a LIFFUC-DB</a>
-        <button class="burger" id="burger" aria-label="Abrir menú" aria-controls="navLinks">
+        <a href="/login" class="nav-cta" data-i18n="Ingresar a LIFFUC-DB">Ingresar a LIFFUC-DB</a>
+        <button class="burger" id="burger" aria-label="Abrir menú" data-i18n-aria-label="Abrir menú" aria-controls="navLinks">
             <span></span><span></span><span></span>
         </button>
     </nav>
@@ -496,18 +515,18 @@ footer.site{
     <!-- HERO -->
     <section class="hero wrap" aria-labelledby="hero-title">
         <div>
-            <span class="eyebrow">Facultad de Ciencias Farmacéuticas</span>
-            <h1 id="hero-title">De la hoja al <em>mecanismo</em> molecular.</h1>
-            <p class="lead">El Laboratorio de Investigaciones Fitoquímicas y Farmacológicas (LIFFUC) estudia compuestos bioactivos de origen vegetal, desde su aislamiento y elucidación estructural hasta su comportamiento farmacológico y su potencial aplicación en salud y en el control biológico de plagas.</p>
+            <span class="eyebrow" data-i18n="Facultad de Ciencias Farmacéuticas">Facultad de Ciencias Farmacéuticas</span>
+            <h1 id="hero-title"><span data-i18n="De la hoja al">De la hoja al</span> <em data-i18n="mecanismo">mecanismo</em> <span data-i18n="molecular.">molecular.</span></h1>
+            <p class="lead" data-i18n="El Laboratorio de Investigaciones Fitoquímicas y Farmacológicas (LIFFUC) estudia compuestos bioactivos de origen vegetal, desde su aislamiento y elucidación estructural hasta su comportamiento farmacológico y su potencial aplicación en salud y en el control biológico de plagas.">El Laboratorio de Investigaciones Fitoquímicas y Farmacológicas (LIFFUC) estudia compuestos bioactivos de origen vegetal, desde su aislamiento y elucidación estructural hasta su comportamiento farmacológico y su potencial aplicación en salud y en el control biológico de plagas.</p>
             <div class="hero-actions">
-                <a href="#conocenos" class="btn btn-primary">Conocer el laboratorio
+                <a href="#conocenos" class="btn btn-primary"><span data-i18n="Conocer el laboratorio">Conocer el laboratorio</span>
                     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
-                <a href="#liffuc-db" class="btn btn-outline">Explorar LIFFUC-DB</a>
+                <a href="#liffuc-db" class="btn btn-outline" data-i18n="Explorar LIFFUC-DB">Explorar LIFFUC-DB</a>
             </div>
         </div>
         <figure class="hero-plate">
-            <svg viewBox="0 0 420 360" fill="none" role="img" aria-label="Ilustración de una rama con hojas conectada por una línea punteada a una estructura molecular">
+            <svg viewBox="0 0 420 360" fill="none" role="img" aria-label="Ilustración de una rama con hojas conectada por una línea punteada a una estructura molecular" data-i18n-aria-label="Ilustración de una rama con hojas conectada por una línea punteada a una estructura molecular">
                 <path class="draw-line" d="M60 320 C 90 260, 70 200, 110 150 C 140 110, 130 70, 160 30"
                     stroke="#FBF8F1" stroke-width="2" stroke-linecap="round"/>
                 <path class="draw-line" d="M110 150 C 80 140, 60 155, 55 180 C 85 185, 105 172, 110 150Z" stroke="#8FAF9A" stroke-width="1.6"/>
@@ -532,8 +551,8 @@ footer.site{
                 </g>
             </svg>
             <figcaption class="plate-caption">
-                <span>Material vegetal</span>
-                <span>Estructura molecular</span>
+                <span data-i18n="Material vegetal">Material vegetal</span>
+                <span data-i18n="Estructura molecular">Estructura molecular</span>
             </figcaption>
         </figure>
     </section>
@@ -542,22 +561,22 @@ footer.site{
     <section class="section bg-stone" id="conocenos" aria-labelledby="conocenos-title">
         <div class="wrap about">
             <div class="reveal">
-                <span class="eyebrow">Conócenos</span>
-                <h2 id="conocenos-title">Un laboratorio de la Universidad de Cartagena</h2>
-                <p class="about-intro">El LIFFUC investiga compuestos bioactivos de origen vegetal y los sigue desde el laboratorio hasta su efecto medible en un organismo vivo.</p>
+                <span class="eyebrow" data-i18n="Conócenos">Conócenos</span>
+                <h2 id="conocenos-title" data-i18n="Un laboratorio de la Universidad de Cartagena">Un laboratorio de la Universidad de Cartagena</h2>
+                <p class="about-intro" data-i18n="El LIFFUC investiga compuestos bioactivos de origen vegetal y los sigue desde el laboratorio hasta su efecto medible en un organismo vivo.">El LIFFUC investiga compuestos bioactivos de origen vegetal y los sigue desde el laboratorio hasta su efecto medible en un organismo vivo.</p>
             </div>
             <dl class="facts reveal">
                 <div class="fact">
-                    <dt>Sede</dt>
-                    <dd>Universidad de Cartagena, Facultad de Ciencias Farmacéuticas.</dd>
+                    <dt data-i18n="Sede">Sede</dt>
+                    <dd data-i18n="Universidad de Cartagena, Facultad de Ciencias Farmacéuticas.">Universidad de Cartagena, Facultad de Ciencias Farmacéuticas.</dd>
                 </div>
                 <div class="fact">
-                    <dt>Enfoque</dt>
-                    <dd>Fitoquímica estructural, farmacología molecular y biotecnología aplicada.</dd>
+                    <dt data-i18n="Enfoque">Enfoque</dt>
+                    <dd data-i18n="Fitoquímica estructural, farmacología molecular y biotecnología aplicada.">Fitoquímica estructural, farmacología molecular y biotecnología aplicada.</dd>
                 </div>
                 <div class="fact">
-                    <dt>Alcance</dt>
-                    <dd>Del banco de laboratorio a la salud pública y la agricultura sostenible del Caribe colombiano.</dd>
+                    <dt data-i18n="Alcance">Alcance</dt>
+                    <dd data-i18n="Del banco de laboratorio a la salud pública y la agricultura sostenible del Caribe colombiano.">Del banco de laboratorio a la salud pública y la agricultura sostenible del Caribe colombiano.</dd>
                 </div>
             </dl>
         </div>
@@ -567,9 +586,9 @@ footer.site{
     <section class="section" id="lineas" aria-labelledby="lineas-title">
         <div class="wrap">
             <div class="section-head reveal">
-                <span class="eyebrow">Líneas de investigación</span>
-                <h2 id="lineas-title">Cuatro líneas, un mismo hilo conductor</h2>
-                <p>Cada línea documenta un espécimen de estudio propio: de la molécula aislada en el laboratorio a su efecto medible en un organismo vivo.</p>
+                <span class="eyebrow" data-i18n="Líneas de investigación">Líneas de investigación</span>
+                <h2 id="lineas-title" data-i18n="Cuatro líneas, un mismo hilo conductor">Cuatro líneas, un mismo hilo conductor</h2>
+                <p data-i18n="Cada línea documenta un espécimen de estudio propio: de la molécula aislada en el laboratorio a su efecto medible en un organismo vivo.">Cada línea documenta un espécimen de estudio propio: de la molécula aislada en el laboratorio a su efecto medible en un organismo vivo.</p>
             </div>
             <div class="specimens">
                 <article class="specimen reveal">
@@ -581,9 +600,9 @@ footer.site{
                         <span class="specimen-reg">REG. FQ-01</span>
                     </div>
                     <div class="specimen-body">
-                        <h3>Elucidación estructural de metabolitos secundarios</h3>
-                        <p>Aislamiento y caracterización de triterpenoides y otros metabolitos vegetales mediante técnicas espectroscópicas, incluyendo RMN, para determinar su estructura molecular con precisión.</p>
-                        <div class="specimen-tag"><span>Fitoquímica</span></div>
+                        <h3 data-i18n="Elucidación estructural de metabolitos secundarios">Elucidación estructural de metabolitos secundarios</h3>
+                        <p data-i18n="Aislamiento y caracterización de triterpenoides y otros metabolitos vegetales mediante técnicas espectroscópicas, incluyendo RMN, para determinar su estructura molecular con precisión.">Aislamiento y caracterización de triterpenoides y otros metabolitos vegetales mediante técnicas espectroscópicas, incluyendo RMN, para determinar su estructura molecular con precisión.</p>
+                        <div class="specimen-tag"><span data-i18n="Fitoquímica">Fitoquímica</span></div>
                     </div>
                 </article>
 
@@ -596,9 +615,9 @@ footer.site{
                         <span class="specimen-reg">REG. FM-02</span>
                     </div>
                     <div class="specimen-body">
-                        <h3>Modelado molecular y diseño racional de fármacos</h3>
-                        <p>Estudios de acoplamiento molecular (docking) y diseño basado en la estructura del receptor para explorar el mecanismo de acción de compuestos bioactivos frente a dianas terapéuticas.</p>
-                        <div class="specimen-tag"><span>Farmacología</span></div>
+                        <h3 data-i18n="Modelado molecular y diseño racional de fármacos">Modelado molecular y diseño racional de fármacos</h3>
+                        <p data-i18n="Estudios de acoplamiento molecular (docking) y diseño basado en la estructura del receptor para explorar el mecanismo de acción de compuestos bioactivos frente a dianas terapéuticas.">Estudios de acoplamiento molecular (docking) y diseño basado en la estructura del receptor para explorar el mecanismo de acción de compuestos bioactivos frente a dianas terapéuticas.</p>
+                        <div class="specimen-tag"><span data-i18n="Farmacología">Farmacología</span></div>
                     </div>
                 </article>
 
@@ -611,9 +630,9 @@ footer.site{
                         <span class="specimen-reg">REG. AG-03</span>
                     </div>
                     <div class="specimen-body">
-                        <h3>Compuestos larvicidas de origen vegetal</h3>
-                        <p>Búsqueda de moléculas con potencial larvicida y plaguicida en especies como la ruda, orientada a alternativas orgánicas para el control de vectores y el manejo agrícola sostenible.</p>
-                        <div class="specimen-tag"><span>Química verde</span></div>
+                        <h3 data-i18n="Compuestos larvicidas de origen vegetal">Compuestos larvicidas de origen vegetal</h3>
+                        <p data-i18n="Búsqueda de moléculas con potencial larvicida y plaguicida en especies como la ruda, orientada a alternativas orgánicas para el control de vectores y el manejo agrícola sostenible.">Búsqueda de moléculas con potencial larvicida y plaguicida en especies como la ruda, orientada a alternativas orgánicas para el control de vectores y el manejo agrícola sostenible.</p>
+                        <div class="specimen-tag"><span data-i18n="Química verde">Química verde</span></div>
                     </div>
                 </article>
 
@@ -626,9 +645,9 @@ footer.site{
                         <span class="specimen-reg">REG. BT-04</span>
                     </div>
                     <div class="specimen-body">
-                        <h3>Clonación molecular y expresión recombinante</h3>
-                        <p>Estrategias de clonación en vectores de expresión y producción de proteínas recombinantes en sistemas bacterianos, como herramienta para el estudio funcional de blancos biológicos.</p>
-                        <div class="specimen-tag"><span>Biotecnología</span></div>
+                        <h3 data-i18n="Clonación molecular y expresión recombinante">Clonación molecular y expresión recombinante</h3>
+                        <p data-i18n="Estrategias de clonación en vectores de expresión y producción de proteínas recombinantes en sistemas bacterianos, como herramienta para el estudio funcional de blancos biológicos.">Estrategias de clonación en vectores de expresión y producción de proteínas recombinantes en sistemas bacterianos, como herramienta para el estudio funcional de blancos biológicos.</p>
+                        <div class="specimen-tag"><span data-i18n="Biotecnología">Biotecnología</span></div>
                     </div>
                 </article>
             </div>
@@ -639,16 +658,16 @@ footer.site{
     <section class="section bg-green on-dark" id="liffuc-db" aria-labelledby="db-title">
         <div class="wrap db-panel">
             <div class="reveal">
-                <span class="eyebrow light">Plataforma propia</span>
-                <h2 id="db-title">LIFFUC-DB: un banco de datos para la fitoquímica</h2>
-                <p>Un repositorio digital de compuestos fitoquímicos y sus registros farmacológicos, inspirado en la lógica de bases estructurales como el Protein Data Bank, pensado para investigadores, semilleros y colaboradores externos.</p>
+                <span class="eyebrow light" data-i18n="Plataforma propia">Plataforma propia</span>
+                <h2 id="db-title" data-i18n="LIFFUC-DB: un banco de datos para la fitoquímica">LIFFUC-DB: un banco de datos para la fitoquímica</h2>
+                <p data-i18n="Un repositorio digital de compuestos fitoquímicos y sus registros farmacológicos, inspirado en la lógica de bases estructurales como el Protein Data Bank, pensado para investigadores, semilleros y colaboradores externos.">Un repositorio digital de compuestos fitoquímicos y sus registros farmacológicos, inspirado en la lógica de bases estructurales como el Protein Data Bank, pensado para investigadores, semilleros y colaboradores externos.</p>
                 <ul class="db-list">
-                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Registro estructurado de compuestos y su procedencia</li>
-                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Acceso diferenciado para investigadores y visitantes</li>
-                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> Trazabilidad entre estructura química y evidencia farmacológica</li>
+                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span data-i18n="Registro estructurado de compuestos y su procedencia">Registro estructurado de compuestos y su procedencia</span></li>
+                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span data-i18n="Acceso diferenciado para investigadores y visitantes">Acceso diferenciado para investigadores y visitantes</span></li>
+                    <li><svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg> <span data-i18n="Trazabilidad entre estructura química y evidencia farmacológica">Trazabilidad entre estructura química y evidencia farmacológica</span></li>
                 </ul>
                 <div class="hero-actions">
-                    <a href="/login" class="btn btn-gold">Ingresar a LIFFUC-DB
+                    <a href="/login" class="btn btn-gold"><span data-i18n="Ingresar a LIFFUC-DB">Ingresar a LIFFUC-DB</span>
                         <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
                 </div>
@@ -664,13 +683,13 @@ footer.site{
                     <circle cx="32" cy="26" r="3" fill="#D9B873"/>
                     <path d="M60 74V100M60 100L38 114M60 100L82 114" stroke="#8FAF9A" stroke-width="1.2"/>
                 </svg>
-                <div class="db-mock" role="img" aria-label="Vista ilustrativa de una tabla de registros de LIFFUC-DB">
+                <div class="db-mock" role="img" aria-label="Vista ilustrativa de una tabla de registros de LIFFUC-DB" data-i18n-aria-label="Vista ilustrativa de una tabla de registros de LIFFUC-DB">
                     <div class="bar"><span></span><span></span><span></span></div>
-                    <div class="db-row"><span class="id">LFC-0142</span><span>Lupeol</span><span class="status">Activo</span></div>
-                    <div class="db-row"><span class="id">LFC-0143</span><span>Chisopatén D</span><span class="status">En revisión</span></div>
-                    <div class="db-row"><span class="id">LFC-0144</span><span>Amprenavir*</span><span class="status">Referencia</span></div>
-                    <div class="db-row"><span class="id">LFC-0145</span><span>Compuesto ruda-01</span><span class="status">Activo</span></div>
-                    <p class="db-note">Vista ilustrativa</p>
+                    <div class="db-row"><span class="id">LFC-0142</span><span>Lupeol</span><span class="status" data-i18n="Activo">Activo</span></div>
+                    <div class="db-row"><span class="id">LFC-0143</span><span>Chisopatén D</span><span class="status" data-i18n="En revisión">En revisión</span></div>
+                    <div class="db-row"><span class="id">LFC-0144</span><span>Amprenavir*</span><span class="status" data-i18n="Referencia">Referencia</span></div>
+                    <div class="db-row"><span class="id">LFC-0145</span><span>Compuesto ruda-01</span><span class="status" data-i18n="Activo">Activo</span></div>
+                    <p class="db-note" data-i18n="Vista ilustrativa">Vista ilustrativa</p>
                 </div>
             </div>
         </div>
@@ -680,17 +699,17 @@ footer.site{
     <section class="section bg-ivory2" id="publicaciones" aria-labelledby="pub-title">
         <div class="wrap">
             <div class="section-head reveal">
-                <span class="eyebrow">Divulgación</span>
-                <h2 id="pub-title">Publicaciones y resultados</h2>
-                <p>El registro de publicaciones del grupo se está consolidando junto con LIFFUC-DB.</p>
+                <span class="eyebrow" data-i18n="Divulgación">Divulgación</span>
+                <h2 id="pub-title" data-i18n="Publicaciones y resultados">Publicaciones y resultados</h2>
+                <p data-i18n="El registro de publicaciones del grupo se está consolidando junto con LIFFUC-DB.">El registro de publicaciones del grupo se está consolidando junto con LIFFUC-DB.</p>
             </div>
             <div class="empty-plate reveal">
                 <svg class="glyph" viewBox="0 0 44 44" fill="none" aria-hidden="true">
                     <rect x="8" y="6" width="28" height="32" rx="2" stroke="currentColor" stroke-width="1.5"/>
                     <path d="M14 16H30M14 23H30M14 30H22" stroke="currentColor" stroke-width="1.4"/>
                 </svg>
-                <h3>Aún no hay publicaciones cargadas</h3>
-                <p>Los artículos, pósteres y presentaciones del grupo se publicarán aquí a medida que estén disponibles.</p>
+                <h3 data-i18n="Aún no hay publicaciones cargadas">Aún no hay publicaciones cargadas</h3>
+                <p data-i18n="Los artículos, pósteres y presentaciones del grupo se publicarán aquí a medida que estén disponibles.">Los artículos, pósteres y presentaciones del grupo se publicarán aquí a medida que estén disponibles.</p>
             </div>
         </div>
     </section>
@@ -699,25 +718,25 @@ footer.site{
     <section class="section" id="equipo" aria-labelledby="equipo-title">
         <div class="wrap">
             <div class="section-head reveal">
-                <span class="eyebrow">Quiénes somos</span>
-                <h2 id="equipo-title">Un equipo entre el banco y el código</h2>
-                <p>LIFFUC reúne dirección académica, investigadores y un semillero de pregrado en torno a la fitoquímica y la farmacología.</p>
+                <span class="eyebrow" data-i18n="Quiénes somos">Quiénes somos</span>
+                <h2 id="equipo-title" data-i18n="Un equipo entre el banco y el código">Un equipo entre el banco y el código</h2>
+                <p data-i18n="LIFFUC reúne dirección académica, investigadores y un semillero de pregrado en torno a la fitoquímica y la farmacología.">LIFFUC reúne dirección académica, investigadores y un semillero de pregrado en torno a la fitoquímica y la farmacología.</p>
             </div>
             <div class="roles">
                 <div class="role-card reveal">
-                    <span class="eyebrow">Dirección</span>
-                    <h3>Dirección del laboratorio</h3>
-                    <p>Orienta las líneas de investigación y la formulación de proyectos del grupo.</p>
+                    <span class="eyebrow" data-i18n="Dirección">Dirección</span>
+                    <h3 data-i18n="Dirección del laboratorio">Dirección del laboratorio</h3>
+                    <p data-i18n="Orienta las líneas de investigación y la formulación de proyectos del grupo.">Orienta las líneas de investigación y la formulación de proyectos del grupo.</p>
                 </div>
                 <div class="role-card reveal">
-                    <span class="eyebrow">Investigación</span>
-                    <h3>Investigadores y colaboradores</h3>
-                    <p>Desarrollan los proyectos activos de fitoquímica, farmacología y biotecnología.</p>
+                    <span class="eyebrow" data-i18n="Investigación">Investigación</span>
+                    <h3 data-i18n="Investigadores y colaboradores">Investigadores y colaboradores</h3>
+                    <p data-i18n="Desarrollan los proyectos activos de fitoquímica, farmacología y biotecnología.">Desarrollan los proyectos activos de fitoquímica, farmacología y biotecnología.</p>
                 </div>
                 <div class="role-card reveal">
-                    <span class="eyebrow">Semillero</span>
-                    <h3>Semillero de investigación</h3>
-                    <p>Estudiantes de pregrado que se forman en investigación dentro de las líneas del laboratorio.</p>
+                    <span class="eyebrow" data-i18n="Semillero">Semillero</span>
+                    <h3 data-i18n="Semillero de investigación">Semillero de investigación</h3>
+                    <p data-i18n="Estudiantes de pregrado que se forman en investigación dentro de las líneas del laboratorio.">Estudiantes de pregrado que se forman en investigación dentro de las líneas del laboratorio.</p>
                 </div>
             </div>
         </div>
@@ -728,10 +747,10 @@ footer.site{
         <div class="wrap">
             <div class="cta-band reveal">
                 <div>
-                    <h2>¿Quieres colaborar con LIFFUC?</h2>
-                    <p>Estudiantes, docentes y grupos aliados pueden escribirnos para proponer proyectos conjuntos o vincularse al semillero de investigación.</p>
+                    <h2 data-i18n="¿Quieres colaborar con LIFFUC?">¿Quieres colaborar con LIFFUC?</h2>
+                    <p data-i18n="Estudiantes, docentes y grupos aliados pueden escribirnos para proponer proyectos conjuntos o vincularse al semillero de investigación.">Estudiantes, docentes y grupos aliados pueden escribirnos para proponer proyectos conjuntos o vincularse al semillero de investigación.</p>
                 </div>
-                <a href="#contacto" class="btn btn-primary">Escribir al laboratorio
+                <a href="#contacto" class="btn btn-primary"><span data-i18n="Escribir al laboratorio">Escribir al laboratorio</span>
                     <svg viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M4 10h12M11 5l5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </a>
             </div>
@@ -750,34 +769,35 @@ footer.site{
                     </svg>
                     <span class="brand-text">LIFFUC</span>
                 </div>
-                <p>Laboratorio de Investigaciones Fitoquímicas y Farmacológicas, Universidad de Cartagena.</p>
+                <p data-i18n="Laboratorio de Investigaciones Fitoquímicas y Farmacológicas, Universidad de Cartagena.">Laboratorio de Investigaciones Fitoquímicas y Farmacológicas, Universidad de Cartagena.</p>
             </div>
             <div class="foot-col">
-                <h4>Navegación</h4>
-                <a href="#conocenos">Nosotros</a>
-                <a href="#lineas">Líneas de investigación</a>
+                <h4 data-i18n="Navegación">Navegación</h4>
+                <a href="#conocenos" data-i18n="Nosotros">Nosotros</a>
+                <a href="#lineas" data-i18n="Líneas de investigación">Líneas de investigación</a>
                 <a href="#liffuc-db">LIFFUC-DB</a>
-                <a href="#publicaciones">Publicaciones</a>
-                <a href="#equipo">Equipo</a>
+                <a href="#publicaciones" data-i18n="Publicaciones">Publicaciones</a>
+                <a href="#equipo" data-i18n="Equipo">Equipo</a>
             </div>
             <div class="foot-col">
-                <h4>Contacto</h4>
+                <h4 data-i18n="Contacto">Contacto</h4>
                 <p>[correo del laboratorio]</p>
                 <p>[teléfono / extensión]</p>
             </div>
             <div class="foot-col">
-                <h4>Ubicación</h4>
-                <p>Facultad de Ciencias Farmacéuticas</p>
-                <p>Universidad de Cartagena, Colombia</p>
+                <h4 data-i18n="Ubicación">Ubicación</h4>
+                <p data-i18n="Facultad de Ciencias Farmacéuticas">Facultad de Ciencias Farmacéuticas</p>
+                <p data-i18n="Universidad de Cartagena, Colombia">Universidad de Cartagena, Colombia</p>
             </div>
         </div>
         <div class="foot-bottom">
             <span>© 2026 LIFFUC · Universidad de Cartagena</span>
-            <span>Fitoquímica · Farmacología · Biotecnología</span>
+            <span data-i18n="Fitoquímica · Farmacología · Biotecnología">Fitoquímica · Farmacología · Biotecnología</span>
         </div>
     </div>
 </footer>
 
+<script src="/inicio/i18n.js" defer></script>
 <script src="/paginaweb/paginaweb.js" defer></script>
 <script>
 /* Complementos no invasivos: aparición al desplazar (idempotente con paginaweb.js)

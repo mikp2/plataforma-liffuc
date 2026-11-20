@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authorizeRequest, MOLECULE_EDITOR_ROLES } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { moleculeInputSchema, serializeMolecule } from "@/lib/moleculas";
 
@@ -9,8 +8,8 @@ const moleculeWithAttachments = {
 };
 
 export async function GET(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest();
+  if (response) return response;
 
   const searchParams = new URL(request.url).searchParams;
   const query = searchParams.get("q")?.trim();
@@ -20,7 +19,7 @@ export async function GET(request) {
     return NextResponse.json({ message: "El estado del filtro no es válido." }, { status: 400 });
   }
   const where = {
-    ...(estado ? { estado } : {}),
+    ...(user.rol === "VISITANTE" ? { estado: "PUBLICADA" } : estado ? { estado } : {}),
     ...(especie ? { especie: { contains: especie, mode: "insensitive" } } : {}),
     ...(query
       ? {
@@ -52,8 +51,8 @@ export async function GET(request) {
 }
 
 export async function POST(request) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest(MOLECULE_EDITOR_ROLES);
+  if (response) return response;
 
   let input;
   try {
@@ -69,7 +68,7 @@ export async function POST(request) {
 
   try {
     const molecule = await prisma.molecula.create({
-      data: parsed.data,
+      data: { ...parsed.data, ...(user.rol === "INVESTIGADOR" ? { estado: "EN_REVISION" } : {}) },
       include: moleculeWithAttachments,
     });
     return NextResponse.json(serializeMolecule(molecule), { status: 201 });

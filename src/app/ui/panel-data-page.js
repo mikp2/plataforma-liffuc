@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useI18n } from "./i18n";
 
 const stateLabels = {
   BORRADOR: "Borrador",
@@ -34,12 +35,12 @@ const pageConfig = {
   },
 };
 
-function formatDate(value) {
+function formatDate(value, locale) {
   if (!value) return "—";
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? "—"
-    : new Intl.DateTimeFormat("es-CO", { dateStyle: "medium", timeStyle: "short" }).format(date);
+    : new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(date);
 }
 
 function usePageData(view) {
@@ -109,15 +110,17 @@ function usePageData(view) {
 }
 
 function PageHeader({ config, reload, loading }) {
+  const { t } = useI18n();
+
   return (
     <header className="workspace-header">
       <div>
-        <p className="workspace-breadcrumb"><Link href="/inicio/DB.html">LIFFUC-DB</Link> / Panel de trabajo</p>
-        <h1>{config.title}</h1>
-        <p className="workspace-description">{config.description}</p>
+        <p className="workspace-breadcrumb"><Link href="/inicio/DB.html">LIFFUC-DB</Link> / {t("Panel de trabajo")}</p>
+        <h1>{t(config.title)}</h1>
+        <p className="workspace-description">{t(config.description)}</p>
       </div>
       <button className="workspace-button workspace-button--quiet" type="button" onClick={reload} disabled={loading}>
-        Actualizar
+        {t("Actualizar")}
       </button>
     </header>
   );
@@ -129,8 +132,9 @@ function Message({ children, error }) {
 }
 
 function SpeciesView({ data }) {
+  const { t, locale } = useI18n();
   const species = data?.especies || [];
-  if (!species.length) return <p className="workspace-empty">Aún no hay especies asociadas a moléculas.</p>;
+  if (!species.length) return <p className="workspace-empty">{t("Aún no hay especies asociadas a moléculas.")}</p>;
   return (
     <div className="workspace-grid">
       {species.map((item) => (
@@ -139,10 +143,10 @@ function SpeciesView({ data }) {
           href={`/panel/moleculas?especie=${encodeURIComponent(item.nombre)}`}
           key={item.nombre}
         >
-          <span className="workspace-card-label">Especie</span>
+          <span className="workspace-card-label">{t("Especie")}</span>
           <h2>{item.nombre}</h2>
-          <span className="species-count">{item.moleculas} molécula(s)</span>
-          <span className="workspace-card-date">Actualizada {formatDate(item.updatedAt)}</span>
+          <span className="species-count">{item.moleculas} {t("Moléculas")}</span>
+          <span className="workspace-card-date">{t("Actualizada")} {formatDate(item.updatedAt, locale)}</span>
         </Link>
       ))}
     </div>
@@ -150,10 +154,11 @@ function SpeciesView({ data }) {
 }
 
 function ApprovalView({ molecules, onApprove, busyCode }) {
+  const { t } = useI18n();
   return (
     <section className="approval-section">
-      <div className="approval-heading"><h2>Moléculas por revisar</h2><span>{molecules.length}</span></div>
-      {!molecules.length ? <p className="workspace-empty">No hay moléculas pendientes de revisión.</p> : (
+      <div className="approval-heading"><h2>{t("Moléculas por revisar")}</h2><span>{molecules.length}</span></div>
+      {!molecules.length ? <p className="workspace-empty">{t("No hay moléculas pendientes de revisión.")}</p> : (
         <div className="workspace-list">
           {molecules.map((molecule) => (
             <article className="workspace-card approval-row" key={molecule.codigo}>
@@ -163,30 +168,31 @@ function ApprovalView({ molecules, onApprove, busyCode }) {
                 <p>{molecule.especie}{molecule.formula ? ` · ${molecule.formula}` : ""}</p>
               </div>
               <div className="approval-actions">
-                <Link className="workspace-button workspace-button--quiet" href={`/panel/moleculas/${encodeURIComponent(molecule.codigo)}/editar`}>Revisar</Link>
+                <Link className="workspace-button workspace-button--quiet" href={`/panel/moleculas/${encodeURIComponent(molecule.codigo)}/editar`}>{t("Revisar")}</Link>
                 <button
                   className="workspace-button workspace-button--primary"
                   type="button"
                   disabled={busyCode === molecule.codigo}
                   onClick={() => onApprove(molecule.codigo)}
                 >
-                  {busyCode === molecule.codigo ? "Aprobando…" : "Aprobar"}
+                  {busyCode === molecule.codigo ? t("Aprobando…") : t("Aprobar")}
                 </button>
               </div>
             </article>
           ))}
         </div>
       )}
-      <p className="workspace-note">Las solicitudes de acceso aún no se guardan en la base de datos.</p>
+      <p className="workspace-note">{t("Las solicitudes de acceso aún no se guardan en la base de datos.")}</p>
     </section>
   );
 }
 
 function HistoryView({ records }) {
-  if (!records.length) return <p className="workspace-empty">Aún no hay moléculas registradas.</p>;
+  const { t, locale } = useI18n();
+  if (!records.length) return <p className="workspace-empty">{t("Aún no hay moléculas registradas.")}</p>;
   return (
     <>
-      <p className="workspace-note">Este resumen muestra fechas actuales de creación y actualización; no hay un registro histórico de cada cambio.</p>
+      <p className="workspace-note">{t("Este resumen muestra fechas actuales de creación y actualización; no hay un registro histórico de cada cambio.")}</p>
       <div className="workspace-list">
         {records.map((record) => (
           <article className="workspace-card history-row" key={record.codigo}>
@@ -194,11 +200,11 @@ function HistoryView({ records }) {
             <div className="workspace-record">
               <span className="workspace-record-code">{record.codigo}</span>
               <h2><Link href={`/panel/moleculas/${encodeURIComponent(record.codigo)}`}>{record.nombre}</Link></h2>
-              <p>Estado: {stateLabels[record.estado] || record.estado}</p>
+              <p>{t("Estado")}: {t(stateLabels[record.estado] || record.estado)}</p>
             </div>
             <div className="history-dates">
-              <span>Creada {formatDate(record.createdAt)}</span>
-              <span>Actualizada {formatDate(record.updatedAt)}</span>
+              <span>{t("Creada")} {formatDate(record.createdAt, locale)}</span>
+              <span>{t("Actualizada")} {formatDate(record.updatedAt, locale)}</span>
             </div>
           </article>
         ))}
@@ -208,31 +214,32 @@ function HistoryView({ records }) {
 }
 
 function StatisticsView({ data }) {
+  const { t } = useI18n();
   const statusCounts = data?.estados || [];
   const species = data?.especiesFrecuentes || [];
   const maxSpecies = Math.max(1, ...species.map((item) => item.cantidad));
   return (
     <>
       <div className="workspace-stats">
-        <article className="workspace-card stat-card"><span>Moléculas</span><strong>{data?.total ?? 0}</strong></article>
-        <article className="workspace-card stat-card"><span>Especies registradas</span><strong>{data?.especies ?? 0}</strong></article>
-        <article className="workspace-card stat-card"><span>Pendientes de revisión</span><strong>{statusCounts.find((item) => item.estado === "EN_REVISION")?.cantidad ?? 0}</strong></article>
+        <article className="workspace-card stat-card"><span>{t("Moléculas")}</span><strong>{data?.total ?? 0}</strong></article>
+        <article className="workspace-card stat-card"><span>{t("Especies registradas")}</span><strong>{data?.especies ?? 0}</strong></article>
+        <article className="workspace-card stat-card"><span>{t("Pendientes de revisión")}</span><strong>{statusCounts.find((item) => item.estado === "EN_REVISION")?.cantidad ?? 0}</strong></article>
       </div>
       <div className="workspace-columns">
         <section className="workspace-card stats-section">
-          <h2>Registros por estado</h2>
+          <h2>{t("Registros por estado")}</h2>
           {statusCounts.length
             ? statusCounts.map((item) => (
               <div className="status-stat" key={item.estado}>
-                <span>{stateLabels[item.estado] || item.estado}</span>
+                <span>{t(stateLabels[item.estado] || item.estado)}</span>
                 <strong>{item.cantidad}</strong>
                 <div className="stat-track"><i style={{ width: `${data.total ? (item.cantidad / data.total) * 100 : 0}%` }} /></div>
               </div>
             ))
-            : <p className="workspace-empty">Aún no hay registros.</p>}
+            : <p className="workspace-empty">{t("Aún no hay registros.")}</p>}
         </section>
         <section className="workspace-card stats-section">
-          <h2>Especies con más registros</h2>
+          <h2>{t("Especies con más registros")}</h2>
           {species.length
             ? species.map((item) => (
               <div className="species-stat" key={item.nombre}>
@@ -241,7 +248,7 @@ function StatisticsView({ data }) {
                 <strong>{item.cantidad}</strong>
               </div>
             ))
-            : <p className="workspace-empty">Aún no hay especies registradas.</p>}
+            : <p className="workspace-empty">{t("Aún no hay especies registradas.")}</p>}
         </section>
       </div>
     </>
@@ -249,6 +256,7 @@ function StatisticsView({ data }) {
 }
 
 export default function PanelDataPage({ view }) {
+  const { t } = useI18n();
   const config = pageConfig[view];
   const { data, error, loading, reload, setError } = usePageData(view);
   const [busyCode, setBusyCode] = useState("");
@@ -259,11 +267,7 @@ export default function PanelDataPage({ view }) {
     setBusyCode(codigo);
     setError("");
     try {
-      const response = await fetch(`/api/moleculas/${encodeURIComponent(codigo)}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ estado: "APROBADA" }),
-      });
+      const response = await fetch(`/api/moleculas/${encodeURIComponent(codigo)}/aprobar`, { method: "PATCH" });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "No se pudo aprobar la molécula.");
       await reload();
@@ -277,7 +281,7 @@ export default function PanelDataPage({ view }) {
   return (
     <main className="workspace-page">
       <PageHeader config={config} reload={reload} loading={loading} />
-      <Message error={Boolean(error)}>{error || (loading ? "Cargando información…" : "")}</Message>
+      <Message error={Boolean(error)}>{error || (loading ? t("Cargando información…") : "")}</Message>
       {!loading && !error && view === "especies" && <SpeciesView data={data} />}
       {!loading && !error && view === "aprobaciones" && (
         <ApprovalView

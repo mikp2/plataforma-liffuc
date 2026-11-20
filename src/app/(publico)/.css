@@ -380,6 +380,8 @@ input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(163, 68, 58, 0.15); }
 .link--small { font-size: 12px; font-weight: 500; }
 
 .signup { margin: 22px 0 0; font-size: 14px; text-align: center; color: var(--stone-500); }
+.signup a, .login-recovery-link { color: var(--forest-700); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.login-recovery-link { font-size: 12px; }
 
 .footer { font-size: 12px; color: var(--stone-500); }
 
@@ -407,4 +409,13 @@ input.is-invalid:focus { box-shadow: 0 0 0 3px rgba(163, 68, 58, 0.15); }
   .brand__content { gap: 28px; }
   .brand__lead, .stats { display: none; }
   .panel { padding-top: 0; margin-top: -40px; position: relative; z-index: 2; }
+}
+
+@media (max-width: 520px) {
+  .brand { min-height: 250px; }
+  .brand__content { padding: 70px 22px 28px; }
+  .brand h1 { font-size: clamp(28px, 8vw, 38px); }
+  .panel { padding: 0 14px 24px; }
+  .card { padding: 24px 20px; }
+  .field__row { align-items: flex-start; flex-direction: column; gap: 6px; }
 }

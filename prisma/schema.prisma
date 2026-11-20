@@ -10,6 +10,7 @@ datasource db {
 enum RolUsuario {
   ADMIN
   INVESTIGADOR
+  VISITANTE
 }
 
 enum EstadoMolecula {
@@ -24,6 +25,11 @@ enum TipoArchivoMolecula {
   PDF
 }
 
+enum TipoCambioCuenta {
+  EMAIL
+  PASSWORD
+}
+
 model Usuario {
   id           String     @id @default(cuid())
   nombre       String
@@ -34,8 +40,52 @@ model Usuario {
   activo       Boolean    @default(true)
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
+  recuperacionContrasena RecuperacionContrasena?
+  cambioCuentaPendiente CambioCuentaPendiente?
 
   @@map("usuarios")
+}
+
+model RegistroPendiente {
+  id           String   @id @default(cuid())
+  nombre       String
+  email        String   @unique
+  username     String   @unique
+  passwordHash String
+  tokenHash    String   @unique
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("registros_pendientes")
+}
+
+model RecuperacionContrasena {
+  id        String   @id @default(cuid())
+  usuarioId String   @unique
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([expiresAt])
+  @@map("recuperaciones_contrasena")
+}
+
+model CambioCuentaPendiente {
+  id                 String          @id @default(cuid())
+  usuarioId          String          @unique
+  usuario            Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tipo               TipoCambioCuenta
+  emailVerificacion  String
+  emailNuevo         String?         @unique
+  passwordHashNuevo  String?
+  tokenHash          String          @unique
+  expiresAt          DateTime
+  createdAt          DateTime        @default(now())
+
+  @@index([expiresAt])
+  @@map("cambios_cuenta_pendientes")
 }
 
 model EstadoSistema {

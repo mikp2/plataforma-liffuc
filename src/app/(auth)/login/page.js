@@ -1,10 +1,13 @@
 "use client";
 
 import { signIn } from "next-auth/react";
+import Link from "next/link";
 import { useState } from "react";
+import { useI18n } from "../../ui/i18n";
 import "../../(publico)/.css";
 
 export default function Page() {
+  const { t } = useI18n();
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -16,7 +19,7 @@ export default function Page() {
     setError("");
 
     if (!identifier.trim() || !password) {
-      setError("Ingresa tu usuario y contraseña.");
+      setError(t("Ingresa tu usuario y contraseña."));
       return;
     }
 
@@ -29,14 +32,14 @@ export default function Page() {
       });
 
       if (!result || result.error) {
-        setError("Usuario o contraseña incorrectos.");
+        setError(t("Usuario o contraseña incorrectos."));
         setLoading(false);
         return;
       }
 
       window.location.replace("/inicio/DB.html");
     } catch {
-      setError("No se pudo iniciar sesión. Intenta de nuevo.");
+      setError(t("No se pudo iniciar sesión. Intenta de nuevo."));
       setLoading(false);
     }
   }
@@ -53,37 +56,36 @@ export default function Page() {
             </div>
           </header>
           <div>
-            <p className="eyebrow">Grupo de investigación LIFFUC</p>
-            <h1>Ciencia que conecta moléculas y conocimiento.</h1>
+            <p className="eyebrow">{t("Grupo de investigación LIFFUC")}</p>
+            <h1>{t("Ciencia que conecta moléculas y conocimiento.")}</h1>
             <p className="brand__lead">
-              Banco de moléculas destinado a la organización, consulta y gestión de
-              compuestos químicos obtenidos de investigaciones en productos naturales.
+              {t("Banco de moléculas destinado a la organización, consulta y gestión de compuestos químicos obtenidos de investigaciones en productos naturales.")}
             </p>
           </div>
           <ul className="stats" aria-label="Áreas de la plataforma">
             <li>
               <strong>01</strong>
-              <span>Investigación</span>
+              <span>{t("Investigación")}</span>
             </li>
             <li>
               <strong>02</strong>
-              <span>Moléculas</span>
+              <span>{t("Moléculas")}</span>
             </li>
             <li>
               <strong>03</strong>
-              <span>Conocimiento</span>
+              <span>{t("Conocimiento")}</span>
             </li>
           </ul>
         </div>
       </section>
 
-      <section className="panel" aria-label="Inicio de sesión">
+      <section className="panel" aria-label={t("Iniciar sesión")}>
         <div className="card">
           <div className="card__header">
-            <p className="eyebrow eyebrow--dark">Acceso a la plataforma</p>
-            <h2>Bienvenido</h2>
+            <p className="eyebrow eyebrow--dark">{t("Acceso a la plataforma")}</p>
+            <h2>{t("Bienvenido")}</h2>
             <p className="muted">
-              Ingresa tus credenciales para acceder al banco de moléculas LIFFUC.
+              {t("Ingresa tus credenciales para acceder al banco de moléculas LIFFUC.")}
             </p>
           </div>
 
@@ -95,14 +97,14 @@ export default function Page() {
 
           <form id="loginForm" noValidate onSubmit={handleSubmit}>
             <div className="field">
-              <label htmlFor="username">Correo electrónico o usuario</label>
+              <label htmlFor="username">{t("Correo electrónico o usuario")}</label>
               <input
                 id="username"
                 name="username"
                 type="text"
                 value={identifier}
                 onChange={(event) => setIdentifier(event.target.value)}
-                placeholder="Ingresa tu usuario"
+                placeholder={t("Ingresa tu usuario")}
                 autoComplete="username"
                 required
                 aria-invalid={Boolean(error)}
@@ -111,7 +113,8 @@ export default function Page() {
 
             <div className="field">
               <div className="field__row">
-                <label htmlFor="password">Contraseña</label>
+                <label htmlFor="password">{t("Contraseña")}</label>
+                <Link className="login-recovery-link" href="/recuperar-contrasena">{t("¿Olvidaste tu contraseña?")}</Link>
               </div>
               <div className="input-group">
                 <input
@@ -120,7 +123,7 @@ export default function Page() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Ingresa tu contraseña"
+                  placeholder={t("Ingresa tu contraseña")}
                   autoComplete="current-password"
                   required
                   aria-invalid={Boolean(error)}
@@ -128,10 +131,10 @@ export default function Page() {
                 <button
                   type="button"
                   className="input-group__btn"
-                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+                  aria-label={showPassword ? t("Ocultar contraseña") : t("Mostrar contraseña")}
                   onClick={() => setShowPassword((visible) => !visible)}
                 >
-                  {showPassword ? "Ocultar" : "Mostrar"}
+                  {showPassword ? t("Ocultar contraseña") : t("Mostrar contraseña")}
                 </button>
               </div>
             </div>
@@ -143,7 +146,7 @@ export default function Page() {
             >
               <span className="btn__spinner" aria-hidden="true" />
               <span className="btn__label">
-                {loading ? "Verificando…" : "Iniciar sesión"}
+                {loading ? t("Verificando…") : t("Iniciar sesión")}
               </span>
             </button>
           </form>
@@ -153,11 +156,14 @@ export default function Page() {
             href="/paginaweb/paginaweb.html"
             style={{ width: "100%", marginTop: 12, textAlign: "center" }}
           >
-            Ir a la página web de LIFFUC
+            {t("Ir a la página web de LIFFUC")}
           </a>
 
-          <div className="divider">Acceso institucional</div>
-          <p className="signup">Solicita tus credenciales al administrador.</p>
+          <div className="divider">{t("Acceso institucional")}</div>
+          <p className="signup">
+            {t("¿Aún no tienes cuenta?")} <Link href="/crear-cuenta">{t("Crear una cuenta de visitante")}</Link>
+          </p>
+          <p className="signup">{t("Para acceso de investigador, solicita tus credenciales al administrador.")}</p>
         </div>
 
         <footer className="footer">LIFFUC-DB · Banco de moléculas</footer>

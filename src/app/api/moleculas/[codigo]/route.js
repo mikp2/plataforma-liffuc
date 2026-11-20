@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { authorizeRequest, MOLECULE_EDITOR_ROLES } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import { moleculeUpdateSchema, serializeMolecule } from "@/lib/moleculas";
 
@@ -9,8 +8,8 @@ const moleculeWithAttachments = {
 };
 
 export async function GET(_request, context) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest();
+  if (response) return response;
 
   const { codigo } = await context.params;
   try {
@@ -19,6 +18,9 @@ export async function GET(_request, context) {
       include: moleculeWithAttachments,
     });
     if (!molecule) return NextResponse.json({ message: "No se encontró la molécula." }, { status: 404 });
+    if (user.rol === "VISITANTE" && molecule.estado !== "PUBLICADA") {
+      return NextResponse.json({ message: "No se encontró la molécula." }, { status: 404 });
+    }
     return NextResponse.json(serializeMolecule(molecule));
   } catch (error) {
     console.error("No se pudo consultar la molécula:", error);
@@ -27,8 +29,8 @@ export async function GET(_request, context) {
 }
 
 export async function PATCH(request, context) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest(MOLECULE_EDITOR_ROLES);
+  if (response) return response;
 
   const { codigo } = await context.params;
   let input;
@@ -42,11 +44,17 @@ export async function PATCH(request, context) {
   if (!parsed.success) {
     return NextResponse.json({ message: "Revisa los campos del formulario.", errors: parsed.error.flatten() }, { status: 400 });
   }
+  if (user.rol === "INVESTIGADOR" && ["APROBADA", "PUBLICADA"].includes(parsed.data.estado)) {
+    return NextResponse.json({ message: "Solo el administrador puede aprobar o publicar moléculas." }, { status: 403 });
+  }
 
+  const updateData = user.rol === "INVESTIGADOR"
+    ? { ...parsed.data, estado: "EN_REVISION" }
+    : parsed.data;
   try {
     const molecule = await prisma.molecula.update({
       where: { codigo },
-      data: parsed.data,
+      data: updateData,
       include: moleculeWithAttachments,
     });
     return NextResponse.json(serializeMolecule(molecule));

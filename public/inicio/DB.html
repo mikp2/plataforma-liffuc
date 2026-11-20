@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-i18n-title="LIFFUC-DB | Banco de moléculas">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -43,6 +43,25 @@
       border-radius: 999px;
       box-shadow: 0 4px 14px #183c3012;
     }
+    .language-selector {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 20;
+      display: flex;
+      min-height: 38px;
+      align-items: center;
+      gap: 7px;
+      padding: 0 10px;
+      color: var(--forest);
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: 0 4px 14px #183c3012;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .language-selector select { max-width: min(34vw, 130px); min-height: 34px; padding: 0 18px 0 0; color: var(--forest); background: transparent; border: 0; font: inherit; }
 
     .layout { min-height: 100vh; display: grid; grid-template-columns: 248px minmax(0, 1fr); }
     .sidebar {
@@ -85,6 +104,7 @@
     .nav-link:hover, .nav-link[aria-current="page"] { color: var(--white); background: #ffffff19; }
     .nav-icon { display: inline-grid; width: 20px; place-items: center; color: #c6d6c6; font-size: 15px; }
     .sidebar-bottom { margin-top: auto; padding: 15px 9px 0; border-top: 1px solid #ffffff24; }
+    [hidden] { display: none !important; }
     .user-name { margin: 0 0 3px; font-size: 13px; font-weight: 600; }
     .user-email { overflow: hidden; margin: 0; color: #b7c8b9; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
     .signout {
@@ -124,6 +144,7 @@
     .notice { margin: 0 0 22px; padding: 12px 15px; color: var(--forest); background: #e9f1e8; border: 1px solid #d5e4d3; border-radius: 9px; font-size: 13px; }
     .notice[data-kind="error"] { color: var(--danger); background: #fbefed; border-color: #ebd0cb; }
     .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 26px; }
+    .stats.stats--visitor { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .stat-card { min-height: 124px; padding: 20px; background: var(--white); border: 1px solid var(--line); border-radius: 12px; }
     .stat-label { margin: 0 0 14px; color: var(--muted); font-size: 12px; }
     .stat-value { margin: 0; color: var(--forest); font-family: "Fraunces", serif; font-size: 32px; line-height: 1; }
@@ -162,15 +183,34 @@
       .topbar { align-items: flex-start; margin-bottom: 24px; }
       .menu-toggle { display: inline-flex; }
       .stats { grid-template-columns: 1fr; }
+      .stats.stats--visitor { grid-template-columns: 1fr; }
       .stat-card { min-height: 100px; }
       .catalog-head { align-items: flex-start; flex-direction: column; padding: 18px; }
       .toolbar { padding: 13px 18px; }
       th, td { padding: 12px; }
     }
+    @media (max-width: 420px) {
+      .language-selector { top: 14px; right: 12px; min-height: 36px; }
+      .language-selector span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; }
+      .topbar { flex-wrap: wrap; }
+      .top-actions { width: 100%; flex-wrap: wrap; }
+      .top-actions .btn { flex: 1 1 auto; }
+      .toolbar { flex-wrap: wrap; }
+      .search { width: 100%; }
+    }
   </style>
 </head>
 <body>
-  <button class="back-button" id="back-button" type="button">← Regresar</button>
+  <button class="back-button" id="back-button" type="button"><span aria-hidden="true">←</span> <span data-i18n="Regresar">Regresar</span></button>
+  <label class="language-selector">
+    <span data-i18n="Idioma">Idioma</span>
+    <select data-language-selector aria-label="Idioma" data-i18n-aria-label="Idioma">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="pt">Português</option>
+      <option value="it">Italiano</option>
+    </select>
+  </label>
 
   <div class="layout">
     <aside class="sidebar" id="sidebar" aria-label="Navegación principal">
@@ -180,89 +220,90 @@
       </a>
 
       <nav>
-        <p class="nav-label">Panel de trabajo</p>
+        <p class="nav-label" data-i18n="Panel de trabajo">Panel de trabajo</p>
         <ul class="nav-list">
-          <li><a class="nav-link" href="/inicio/DB.html" aria-current="page"><span class="nav-icon">⌂</span>Resumen</a></li>
-          <li><a class="nav-link" href="/panel/moleculas"><span class="nav-icon">◈</span>Moléculas</a></li>
-          <li><a class="nav-link" href="/panel/especies"><span class="nav-icon">❋</span>Especies</a></li>
-          <li><a class="nav-link" href="/panel/aprobaciones"><span class="nav-icon">✓</span>Aprobaciones</a></li>
-          <li><a class="nav-link" href="/panel/historial"><span class="nav-icon">◷</span>Historial</a></li>
-          <li><a class="nav-link" href="/panel/estadisticas"><span class="nav-icon">▥</span>Estadísticas</a></li>
-          <li><a class="nav-link" href="/panel/usuarios"><span class="nav-icon">◎</span>Usuarios</a></li>
-          <li><a class="nav-link" href="/panel/perfil"><span class="nav-icon">◉</span>Mi perfil</a></li>
+          <li><a class="nav-link" href="/inicio/DB.html" aria-current="page"><span class="nav-icon">⌂</span><span data-i18n="Resumen">Resumen</span></a></li>
+          <li><a class="nav-link" href="/panel/moleculas"><span class="nav-icon">◈</span><span data-i18n="Moléculas">Moléculas</span></a></li>
+          <li><a class="nav-link" href="/panel/especies"><span class="nav-icon">❋</span><span data-i18n="Especies">Especies</span></a></li>
+          <li><a class="nav-link" href="/panel/aprobaciones"><span class="nav-icon">✓</span><span data-i18n="Aprobaciones">Aprobaciones</span></a></li>
+          <li><a class="nav-link" href="/panel/historial"><span class="nav-icon">◷</span><span data-i18n="Historial">Historial</span></a></li>
+          <li><a class="nav-link" href="/panel/estadisticas"><span class="nav-icon">▥</span><span data-i18n="Estadísticas">Estadísticas</span></a></li>
+          <li><a class="nav-link" href="/panel/usuarios"><span class="nav-icon">◎</span><span data-i18n="Usuarios">Usuarios</span></a></li>
+          <li><a class="nav-link" href="/panel/perfil"><span class="nav-icon">◉</span><span data-i18n="Mi perfil">Mi perfil</span></a></li>
         </ul>
       </nav>
 
-      <div class="sidebar-bottom">
+      <div class="sidebar-bottom" id="sidebar-bottom">
         <p class="user-name" id="user-name">Verificando sesión…</p>
         <p class="user-email" id="user-email"></p>
-        <button class="signout" id="signout" type="button">Cerrar sesión</button>
+        <button class="signout" id="signout" type="button" data-i18n="Cerrar sesión">Cerrar sesión</button>
       </div>
     </aside>
 
     <main class="main">
       <header class="topbar">
         <div>
-          <p class="breadcrumb">LIFFUC-DB / Resumen</p>
-          <h1>Banco de moléculas</h1>
+          <p class="breadcrumb">LIFFUC-DB / <span data-i18n="Resumen">Resumen</span></p>
+          <h1 data-i18n="Banco de moléculas">Banco de moléculas</h1>
         </div>
         <div class="top-actions">
-          <button class="btn menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar">Menú</button>
-          <button class="btn" id="refresh" type="button">Actualizar</button>
-          <a class="btn" href="/panel/moleculas/nueva">+ Nueva molécula</a>
+          <button class="btn menu-toggle" id="menu-toggle" type="button" aria-expanded="false" aria-controls="sidebar" data-i18n="Menú">Menú</button>
+          <button class="btn" id="refresh" type="button" data-i18n="Actualizar">Actualizar</button>
+          <a class="btn" href="/panel/moleculas/nueva" data-i18n="+ Nueva molécula">+ Nueva molécula</a>
         </div>
       </header>
 
       <div class="notice" id="notice" role="status" aria-live="polite">Comprobando acceso y cargando el banco…</div>
 
-      <section class="stats" aria-label="Resumen del banco">
+      <section class="stats" id="stats" aria-label="Resumen del banco">
         <article class="stat-card">
-          <p class="stat-label">Moléculas registradas</p>
+          <p class="stat-label" data-i18n="Moléculas registradas">Moléculas registradas</p>
           <p class="stat-value" id="molecule-count">—</p>
-          <p class="stat-foot">Registros disponibles en el banco</p>
+          <p class="stat-foot" data-i18n="Registros disponibles en el banco">Registros disponibles en el banco</p>
         </article>
         <article class="stat-card">
-          <p class="stat-label">Especies relacionadas</p>
+          <p class="stat-label" data-i18n="Especies relacionadas">Especies relacionadas</p>
           <p class="stat-value" id="species-count">—</p>
-          <p class="stat-foot">Especies distintas en los registros</p>
+          <p class="stat-foot" data-i18n="Especies distintas en los registros">Especies distintas en los registros</p>
         </article>
-        <article class="stat-card">
-          <p class="stat-label">Pendientes de revisión</p>
+        <article class="stat-card" id="pending-review-card" hidden>
+          <p class="stat-label" data-i18n="Pendientes de revisión">Pendientes de revisión</p>
           <p class="stat-value" id="pending-count">—</p>
-          <p class="stat-foot">Registros en espera de aprobación</p>
+          <p class="stat-foot" data-i18n="Registros en espera de aprobación">Registros en espera de aprobación</p>
         </article>
       </section>
 
       <section class="catalog" aria-labelledby="catalog-title">
         <div class="catalog-head">
           <div>
-            <h2 id="catalog-title">Catálogo de moléculas</h2>
-            <p>Consulta y filtra los compuestos registrados en LIFFUC-DB.</p>
+            <h2 id="catalog-title" data-i18n="Catálogo de moléculas">Catálogo de moléculas</h2>
+            <p data-i18n="Consulta y filtra los compuestos registrados en LIFFUC-DB.">Consulta y filtra los compuestos registrados en LIFFUC-DB.</p>
           </div>
-          <a class="btn" href="/panel/moleculas">Ver catálogo</a>
+          <a class="btn" href="/panel/moleculas" data-i18n="Ver catálogo">Ver catálogo</a>
         </div>
         <div class="toolbar">
-          <input class="search" id="search" type="search" placeholder="Buscar por código, molécula o especie…" aria-label="Buscar moléculas">
+          <input class="search" id="search" type="search" placeholder="Buscar por código, molécula o especie…" data-i18n-placeholder="Buscar por código, molécula o especie…" aria-label="Buscar moléculas" data-i18n-aria-label="Buscar moléculas">
         </div>
         <div class="table-wrap">
           <table>
             <thead>
               <tr>
-                <th scope="col">Código</th>
-                <th scope="col">Molécula</th>
-                <th scope="col">Especie</th>
-                <th scope="col">Estado</th>
-                <th scope="col">Actualización</th>
+                <th scope="col" data-i18n="Código">Código</th>
+                <th scope="col" data-i18n="Molécula">Molécula</th>
+                <th scope="col" data-i18n="Especie">Especie</th>
+                <th scope="col" data-i18n="Estado">Estado</th>
+                <th scope="col" data-i18n="Actualización">Actualización</th>
               </tr>
             </thead>
             <tbody id="molecule-rows">
-              <tr><td class="empty" colspan="5"><strong>Cargando registros…</strong><span>Espera un momento.</span></td></tr>
+              <tr><td class="empty" colspan="5"><strong data-i18n="Cargando registros…">Cargando registros…</strong><span data-i18n="Espera un momento.">Espera un momento.</span></td></tr>
             </tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
+  <script src="/inicio/i18n.js" defer></script>
   <script src="/inicio/DB.js" defer></script>
 </body>
 </html>

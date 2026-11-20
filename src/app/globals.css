@@ -1,22 +1,51 @@
 :root {
   color-scheme: light;
   font-family: "Segoe UI", sans-serif;
+  text-size-adjust: 100%;
 }
 
 * {
   box-sizing: border-box;
 }
 
+html {
+  min-width: 320px;
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
+  min-width: 320px;
   color: #1a1a1a;
   background: #f6f7f4;
+  overflow-x: clip;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  max-width: 100%;
 }
 
 main {
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1.25rem;
+  padding: clamp(1.25rem, 4vw, 2rem) clamp(1rem, 4vw, 1.75rem);
+}
+
+@media (max-width: 600px) {
+  main {
+    padding-right: 1rem;
+    padding-left: 1rem;
+  }
 }
 
 .back-button {

@@ -1,4 +1,10 @@
-export default function Page() {
+import { redirect } from "next/navigation";
+import { getActiveSession } from "@/lib/authorization";
+
+export default async function Page() {
+  const session = await getActiveSession();
+  if (!["ADMIN", "INVESTIGADOR"].includes(session?.user?.role)) redirect("/panel/moleculas");
+
   return (
     <iframe
       title="Registrar molécula"

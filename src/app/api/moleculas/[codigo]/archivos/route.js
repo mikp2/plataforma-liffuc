@@ -1,6 +1,5 @@
-import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import { authOptions } from "@/lib/auth";
+import { authorizeRequest, MOLECULE_EDITOR_ROLES } from "@/lib/authorization";
 import { prisma } from "@/lib/prisma";
 import {
   MAX_FILE_COUNT,
@@ -11,8 +10,8 @@ import {
 } from "@/lib/molecule-files";
 
 export async function POST(request, context) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({ message: "Debes iniciar sesión." }, { status: 401 });
+  const { user, response } = await authorizeRequest(MOLECULE_EDITOR_ROLES);
+  if (response) return response;
 
   const { codigo } = await context.params;
   let molecule;
@@ -46,6 +45,9 @@ export async function POST(request, context) {
   try {
     savedFiles = await persistMoleculeFiles(files, molecule.id);
     await prisma.archivoMolecula.createMany({ data: savedFiles });
+    if (user.rol === "INVESTIGADOR") {
+      await prisma.molecula.update({ where: { id: molecule.id }, data: { estado: "EN_REVISION" } });
+    }
     const attachments = await prisma.archivoMolecula.findMany({
       where: { moleculaId: molecule.id },
       select: { id: true, nombre: true, tipo: true, mimeType: true, tamano: true, createdAt: true },

@@ -1,4 +1,4 @@
-.public-catalog { width: min(100%, 1320px); max-width: 1320px; min-height: 100vh; margin: auto; padding: 27px clamp(18px, 4vw, 52px) 48px; color: #26342d; background: #f6f7f3; font-family: "DM Sans", sans-serif; }
+.public-catalog { width: min(100%, 1320px); max-width: 1320px; min-height: 100vh; margin: auto; padding: 76px clamp(18px, 4vw, 52px) 48px; color: #26342d; background: #f6f7f3; font-family: "DM Sans", sans-serif; overflow-wrap: anywhere; }
 .public-catalog-header { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-bottom: 16px; border-bottom: 1px solid #e4e9e3; }
 .public-brand { color: #193b2e; font: 600 19px "Fraunces", Georgia, serif; text-decoration: none; }
 .public-brand span { color: #a77a2e; }
@@ -43,5 +43,6 @@
 .public-detail-section h2 { margin: 0 0 6px; color: #193b2e; font: 500 17px "Fraunces", Georgia, serif; }
 .public-detail-section p { margin: 0; color: #52635a; font-size: 12px; line-height: 1.7; white-space: pre-line; }
 .public-visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); clip-path: inset(50%); white-space: nowrap; }
-@media(max-width:600px){.public-catalog{padding:18px 13px 30px}.public-catalog-header{align-items:flex-start;flex-direction:column}.public-catalog-header nav{width:100%;justify-content:space-between;gap:8px}.public-controls{flex-direction:column}.public-controls label:first-child{flex:auto}.public-molecule-grid,.public-species-grid{grid-template-columns:1fr}}
+@media(max-width:900px){.public-catalog{padding-right:24px;padding-left:24px}.public-catalog-header{align-items:flex-start;flex-wrap:wrap}.public-catalog-header nav{flex-wrap:wrap}}
+@media(max-width:600px){.public-catalog{padding:76px 13px 30px}.public-catalog-header{align-items:flex-start;flex-direction:column}.public-catalog-header nav{width:100%;justify-content:space-between;gap:8px}.public-controls{flex-direction:column}.public-controls label:first-child{flex:auto}.public-molecule-grid,.public-species-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.public-molecule-card,.public-species-card{transition:none}}

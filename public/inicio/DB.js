@@ -3,6 +3,7 @@ const rows = document.getElementById("molecule-rows");
 const search = document.getElementById("search");
 const sidebar = document.getElementById("sidebar");
 const menuToggle = document.getElementById("menu-toggle");
+const t = (value) => window.LIFFUC_I18n?.t(value) || value;
 let molecules = [];
 
 function setNotice(message, kind = "info") {
@@ -29,8 +30,8 @@ function getSpecies(record) {
 function normalizeMolecule(record) {
   return {
     code: String(getField(record, ["codigo", "code", "id"]) || "—"),
-    name: String(getField(record, ["nombre", "nombreCompuesto", "name", "compuesto"]) || "Sin nombre"),
-    species: String(getSpecies(record) || "Sin especie"),
+    name: String(getField(record, ["nombre", "nombreCompuesto", "name", "compuesto"]) || t("Sin nombre")),
+    species: String(getSpecies(record) || t("Sin especie")),
     status: String(getField(record, ["estado", "status"]) || "Sin estado"),
     updated: getField(record, ["updatedAt", "fechaActualizacion", "createdAt"]),
   };
@@ -41,7 +42,17 @@ function formatDate(value) {
   const date = new Date(value);
   return Number.isNaN(date.getTime())
     ? String(value)
-    : new Intl.DateTimeFormat("es-CO", { dateStyle: "medium" }).format(date);
+    : new Intl.DateTimeFormat(window.LIFFUC_I18n?.locale || "es-CO", { dateStyle: "medium" }).format(date);
+}
+
+function statusLabel(status) {
+  const labels = {
+    BORRADOR: "Borrador",
+    EN_REVISION: "En revisión",
+    APROBADA: "Aprobada",
+    PUBLICADA: "Publicada",
+  };
+  return t(labels[status] || status || "Sin estado");
 }
 
 function makeCell(value, className = "") {
@@ -52,12 +63,13 @@ function makeCell(value, className = "") {
 }
 
 function renderMolecules() {
-  const query = search.value.trim().toLocaleLowerCase("es");
+  const locale = window.LIFFUC_I18n?.locale || "es-CO";
+  const query = search.value.trim().toLocaleLowerCase(locale);
   const visible = molecules
     .map(normalizeMolecule)
     .filter((molecule) =>
       `${molecule.code} ${molecule.name} ${molecule.species} ${molecule.status}`
-        .toLocaleLowerCase("es")
+        .toLocaleLowerCase(locale)
         .includes(query),
     );
 
@@ -70,10 +82,10 @@ function renderMolecules() {
     cell.colSpan = 5;
     const title = document.createElement("strong");
     const detail = document.createElement("span");
-    title.textContent = molecules.length === 0 ? "Aún no hay moléculas registradas" : "No se encontraron resultados";
+    title.textContent = t(molecules.length === 0 ? "Aún no hay moléculas registradas" : "No se encontraron resultados");
     detail.textContent = molecules.length === 0
-      ? "Cuando existan registros, aparecerán en este catálogo."
-      : "Prueba con otro término de búsqueda.";
+      ? t("Cuando existan registros, aparecerán en este catálogo.")
+      : t("Prueba con otro término de búsqueda.");
     cell.append(title, detail);
     row.append(cell);
     rows.append(row);
@@ -91,7 +103,7 @@ function renderMolecules() {
     const statusCell = document.createElement("td");
     const status = document.createElement("span");
     status.className = "status-pill";
-    status.textContent = molecule.status;
+    status.textContent = statusLabel(molecule.status);
     statusCell.append(status);
     row.append(statusCell, makeCell(formatDate(molecule.updated)));
     fragment.append(row);
@@ -106,8 +118,8 @@ function updateStats() {
       .map((molecule) => molecule.species)
       .filter((name) => name && name !== "Sin especie"),
   );
-  const pending = normalized.filter((molecule) =>
-    /pendiente|revisi[oó]n|pending/i.test(molecule.status),
+  const pending = molecules.filter((molecule) =>
+    ["EN_REVISION", "PENDING", "PENDING_REVIEW"].includes(String(getField(molecule, ["estado", "status"])).toUpperCase()),
   );
   document.getElementById("molecule-count").textContent = String(molecules.length);
   document.getElementById("species-count").textContent = String(species.size);
@@ -115,7 +127,7 @@ function updateStats() {
 }
 
 async function loadMolecules() {
-  setNotice("Cargando registros de moléculas…");
+  setNotice(t("Cargando registros de moléculas…"));
   const response = await fetch("/api/moleculas", { cache: "no-store" });
   let payload;
   try {
@@ -142,7 +154,7 @@ async function loadMolecules() {
   molecules = result;
   updateStats();
   renderMolecules();
-  setNotice(result.length ? `${result.length} registro(s) cargados.` : "El banco no tiene moléculas registradas todavía.");
+  setNotice(result.length ? `${result.length} ${t("registro(s) cargados.")}` : t("El banco no tiene moléculas registradas todavía."));
 }
 
 async function initialize() {
@@ -157,15 +169,30 @@ async function initialize() {
 
     document.getElementById("user-name").textContent = session.user.name || "Usuario";
     document.getElementById("user-email").textContent = session.user.email || "";
+    const isAdmin = session.user.role === "ADMIN";
+    const canReviewMolecules = isAdmin || session.user.role === "INVESTIGADOR";
+    const canEditMolecules = canReviewMolecules;
+    document.getElementById("stats").classList.toggle("stats--visitor", session.user.role === "VISITANTE");
+    document.getElementById("pending-review-card").hidden = !canReviewMolecules;
+    document.getElementById("sidebar-bottom").hidden = false;
+    document.getElementById("user-name").hidden = false;
+    document.getElementById("user-email").hidden = false;
+    document.getElementById("signout").hidden = false;
+    for (const link of document.querySelectorAll('a[href="/panel/aprobaciones"], a[href="/panel/usuarios"]')) {
+      if (!isAdmin) link.closest("li").hidden = true;
+    }
+    for (const link of document.querySelectorAll('a[href="/panel/moleculas/nueva"]')) {
+      if (!canEditMolecules) link.hidden = true;
+    }
     await loadMolecules();
   } catch (error) {
-    setNotice(error.message || "No se pudo cargar el panel.", "error");
+    setNotice(error.message || t("No se pudo cargar el panel."), "error");
     rows.replaceChildren();
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.className = "empty";
     cell.colSpan = 5;
-    cell.textContent = error.message || "No se pudo cargar el catálogo.";
+    cell.textContent = error.message || t("No se pudo cargar el catálogo.");
     row.append(cell);
     rows.append(row);
   }
@@ -207,6 +234,11 @@ search.addEventListener("input", renderMolecules);
 menuToggle.addEventListener("click", () => {
   const isOpen = sidebar.classList.toggle("is-open");
   menuToggle.setAttribute("aria-expanded", String(isOpen));
+});
+
+document.addEventListener("liffuc-language-change", () => {
+  renderMolecules();
+  updateStats();
 });
 
 initialize();
