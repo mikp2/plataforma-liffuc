@@ -1,11 +1,7 @@
 import { NextResponse } from "next/server";
 import { authorizeRequest, MOLECULE_EDITOR_ROLES } from "@/lib/authorization";
-import { prisma } from "@/lib/prisma";
 import { moleculeInputSchema, serializeMolecule } from "@/lib/moleculas";
-
-const moleculeWithAttachments = {
-  archivos: { select: { id: true, nombre: true, tipo: true, mimeType: true, tamano: true, createdAt: true } },
-};
+import { crearMolecula, listarMoleculas } from "@/services/moleculas.service";
 
 export async function GET(request) {
   const { user, response } = await authorizeRequest();
@@ -35,11 +31,7 @@ export async function GET(request) {
   };
 
   try {
-    const molecules = await prisma.molecula.findMany({
-      where,
-      include: moleculeWithAttachments,
-      orderBy: { updatedAt: "desc" },
-    });
+    const molecules = await listarMoleculas(where);
     return NextResponse.json({
       moleculas: molecules.map(serializeMolecule),
       total: molecules.length,
@@ -67,14 +59,17 @@ export async function POST(request) {
   }
 
   try {
-    const molecule = await prisma.molecula.create({
-      data: { ...parsed.data, ...(user.rol === "INVESTIGADOR" ? { estado: "EN_REVISION" } : {}) },
-      include: moleculeWithAttachments,
+    const molecule = await crearMolecula({
+      ...parsed.data,
+      ...(user.rol === "INVESTIGADOR" ? { estado: "EN_REVISION" } : {}),
     });
     return NextResponse.json(serializeMolecule(molecule), { status: 201 });
   } catch (error) {
     if (error?.code === "P2002") {
-      return NextResponse.json({ message: "Ya existe una molécula con ese código." }, { status: 409 });
+      return NextResponse.json({ message: "Ya existe una molécula con ese código o identificador químico." }, { status: 409 });
+    }
+    if (error?.code === "P2003" || error?.code === "P2004") {
+      return NextResponse.json({ message: "Una o más referencias bibliográficas no existen." }, { status: 400 });
     }
     console.error("No se pudo crear la molécula:", error);
     return NextResponse.json({ message: "No se pudo guardar la molécula." }, { status: 500 });

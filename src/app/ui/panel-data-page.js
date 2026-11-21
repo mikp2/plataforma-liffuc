@@ -15,8 +15,8 @@ const stateLabels = {
 const pageConfig = {
   especies: {
     title: "Especies",
-    description: "Especies registradas a partir de las moléculas del banco.",
-    endpoint: "/api/moleculas",
+    description: "Catálogo taxonómico y determinaciones botánicas registradas.",
+    endpoint: "/api/especies",
   },
   aprobaciones: {
     title: "Aprobaciones",
@@ -134,20 +134,19 @@ function Message({ children, error }) {
 function SpeciesView({ data }) {
   const { t, locale } = useI18n();
   const species = data?.especies || [];
-  if (!species.length) return <p className="workspace-empty">{t("Aún no hay especies asociadas a moléculas.")}</p>;
+  if (!species.length) return <p className="workspace-empty">{t("Aún no hay especies registradas.")}</p>;
   return (
     <div className="workspace-grid">
       {species.map((item) => (
-        <Link
-          className="workspace-card species-card"
-          href={`/panel/moleculas?especie=${encodeURIComponent(item.nombre)}`}
-          key={item.nombre}
-        >
+        <article className="workspace-card species-card" key={item.id}>
           <span className="workspace-card-label">{t("Especie")}</span>
-          <h2>{item.nombre}</h2>
-          <span className="species-count">{item.moleculas} {t("Moléculas")}</span>
+          <h2><i>{item.nombreCientifico}</i></h2>
+          {item.familia && <span>{t("Familia")}: {item.familia}</span>}
+          <span className="species-count">
+            {item._count?.identificaciones ?? 0} {t("identificaciones botánicas")}
+          </span>
           <span className="workspace-card-date">{t("Actualizada")} {formatDate(item.updatedAt, locale)}</span>
-        </Link>
+        </article>
       ))}
     </div>
   );

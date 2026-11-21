@@ -3,8 +3,10 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DATABASE_URL_UNPOOLED")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 enum RolUsuario {
@@ -30,18 +32,24 @@ enum TipoCambioCuenta {
   PASSWORD
 }
 
+enum TipoBioensayo {
+  FARMACOLOGICO
+  TOXICOLOGICO
+  OTRO
+}
+
 model Usuario {
-  id           String     @id @default(cuid())
-  nombre       String
-  email        String     @unique
-  username     String     @unique
-  passwordHash String
-  rol          RolUsuario @default(INVESTIGADOR)
-  activo       Boolean    @default(true)
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  id                     String                  @id @default(cuid())
+  nombre                 String
+  email                  String                  @unique
+  username               String                  @unique
+  passwordHash           String
+  rol                    RolUsuario              @default(INVESTIGADOR)
+  activo                 Boolean                 @default(true)
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
   recuperacionContrasena RecuperacionContrasena?
-  cambioCuentaPendiente CambioCuentaPendiente?
+  cambioCuentaPendiente  CambioCuentaPendiente?
 
   @@map("usuarios")
 }
@@ -73,16 +81,16 @@ model RecuperacionContrasena {
 }
 
 model CambioCuentaPendiente {
-  id                 String          @id @default(cuid())
-  usuarioId          String          @unique
-  usuario            Usuario         @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
-  tipo               TipoCambioCuenta
-  emailVerificacion  String
-  emailNuevo         String?         @unique
-  passwordHashNuevo  String?
-  tokenHash          String          @unique
-  expiresAt          DateTime
-  createdAt          DateTime        @default(now())
+  id                String           @id @default(cuid())
+  usuarioId         String           @unique
+  usuario           Usuario          @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  tipo              TipoCambioCuenta
+  emailVerificacion String
+  emailNuevo        String?          @unique
+  passwordHashNuevo String?
+  tokenHash         String           @unique
+  expiresAt         DateTime
+  createdAt         DateTime         @default(now())
 
   @@index([expiresAt])
   @@map("cambios_cuenta_pendientes")
@@ -99,27 +107,264 @@ model EstadoSistema {
 }
 
 model Molecula {
-  id              String         @id @default(cuid())
-  codigo          String         @unique
-  nombre          String
-  formula         String?
-  pesoMolecular   Float?
-  especie         String
-  familia         String?
-  origen          String?
-  descripcion     String         @db.Text
-  actividad       String?        @db.Text
-  metodoObtencion String?        @db.Text
-  referencias     String?        @db.Text
-  estado          EstadoMolecula @default(BORRADOR)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  archivos        ArchivoMolecula[]
+  id                        String                    @id @default(cuid())
+  codigo                    String                    @unique
+  nombre                    String
+  formula                   String?
+  pesoMolecular             Float?
+  smilesCanonico            String?                   @db.Text
+  inchi                     String?                   @db.Text
+  inchiKey                  String?                   @unique
+  numeroCas                 String?                   @unique
+  especie                   String
+  familia                   String?
+  origen                    String?
+  descripcion               String                    @db.Text
+  actividad                 String?                   @db.Text
+  metodoObtencion           String?                   @db.Text
+  referencias               String?                   @db.Text
+  estado                    EstadoMolecula            @default(BORRADOR)
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  archivos                  ArchivoMolecula[]
+  aislamientos              Aislamiento[]
+  resultadosBioensayo       ResultadoBioensayo[]
+  referenciasBibliograficas ReferenciaBibliografica[]
 
   @@index([nombre])
   @@index([especie])
   @@index([estado])
   @@map("moleculas")
+}
+
+model Especie {
+  id                        String                    @id @default(cuid())
+  nombreCientifico          String                    @unique
+  autorTaxonomico           String?
+  genero                    String?
+  familia                   String?
+  nombreComun               String?
+  descripcion               String?                   @db.Text
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+  identificaciones          IdentificacionBotanica[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+
+  @@index([familia])
+  @@map("especies")
+}
+
+model MuestraBotanica {
+  id                        String                    @id @default(cuid())
+  numeroVoucher             String?
+  herbario                  String?
+  colector                  String?
+  fechaRecoleccion          DateTime?                 @db.Date
+  pais                      String?
+  localidad                 String?                   @db.Text
+  latitud                   Decimal?                  @db.Decimal(9, 6)
+  longitud                  Decimal?                  @db.Decimal(9, 6)
+  parteVegetal              String?
+  notas                     String?                   @db.Text
+  identificaciones          IdentificacionBotanica[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@unique([herbario, numeroVoucher])
+  @@index([fechaRecoleccion])
+  @@map("muestras_botanicas")
+}
+
+model IdentificacionBotanica {
+  id                        String                    @id @default(cuid())
+  muestraId                 String
+  muestra                   MuestraBotanica           @relation(fields: [muestraId], references: [id], onDelete: Restrict)
+  especieId                 String
+  especie                   Especie                   @relation(fields: [especieId], references: [id], onDelete: Restrict)
+  identificadoPor           String?
+  fechaIdentificacion       DateTime?                 @db.Date
+  metodo                    String?
+  esVigente                 Boolean                   @default(true)
+  notas                     String?                   @db.Text
+  extractos                 Extracto[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@index([muestraId])
+  @@index([especieId])
+  @@index([esVigente])
+  @@map("identificaciones_botanicas")
+}
+
+model Extracto {
+  id                        String                    @id @default(cuid())
+  codigo                    String                    @unique
+  identificacionId          String
+  identificacion            IdentificacionBotanica    @relation(fields: [identificacionId], references: [id], onDelete: Restrict)
+  metodoExtraccion          String
+  solvente                  String
+  parteVegetal              String?
+  temperaturaC              Decimal?                  @db.Decimal(8, 3)
+  duracionMinutos           Int?
+  masaInicialMg             Decimal?                  @db.Decimal(14, 4)
+  masaExtractoMg            Decimal?                  @db.Decimal(14, 4)
+  rendimientoPct            Decimal?                  @db.Decimal(7, 4)
+  condiciones               String?                   @db.Text
+  fracciones                Fraccion[]
+  resultadosBioensayo       ResultadoBioensayo[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@index([identificacionId])
+  @@map("extractos")
+}
+
+model Fraccion {
+  id                        String                    @id @default(cuid())
+  codigo                    String                    @unique
+  extractoId                String
+  extracto                  Extracto                  @relation(fields: [extractoId], references: [id], onDelete: Restrict)
+  fraccionPadreId           String?
+  fraccionPadre             Fraccion?                 @relation("JerarquiaFracciones", fields: [fraccionPadreId, extractoId], references: [id, extractoId], onDelete: Restrict, onUpdate: Cascade)
+  fraccionesDerivadas       Fraccion[]                @relation("JerarquiaFracciones")
+  metodoFraccionamiento     String
+  faseEstacionaria          String?
+  eluyente                  String?
+  orden                     Int?
+  masaMg                    Decimal?                  @db.Decimal(14, 4)
+  notas                     String?                   @db.Text
+  aislamientos              Aislamiento[]
+  resultadosBioensayo       ResultadoBioensayo[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@unique([id, extractoId])
+  @@index([extractoId])
+  @@index([fraccionPadreId])
+  @@map("fracciones")
+}
+
+model Aislamiento {
+  id                        String                       @id @default(cuid())
+  codigoMuestra             String?                      @unique
+  fraccionId                String
+  fraccion                  Fraccion                     @relation(fields: [fraccionId], references: [id], onDelete: Restrict)
+  moleculaId                String
+  molecula                  Molecula                     @relation(fields: [moleculaId], references: [id], onDelete: Restrict)
+  metodo                    String
+  purezaPct                 Decimal?                     @db.Decimal(7, 4)
+  masaAisladaMg             Decimal?                     @db.Decimal(14, 4)
+  fechaAislamiento          DateTime?                    @db.Date
+  observaciones             String?                      @db.Text
+  caracterizaciones         CaracterizacionEstructural[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                     @default(now())
+  updatedAt                 DateTime                     @updatedAt
+
+  @@index([fraccionId])
+  @@index([moleculaId])
+  @@map("aislamientos")
+}
+
+model CaracterizacionEstructural {
+  id                        String                    @id @default(cuid())
+  aislamientoId             String
+  aislamiento               Aislamiento               @relation(fields: [aislamientoId], references: [id], onDelete: Restrict)
+  tecnica                   String
+  equipo                    String?
+  condiciones               String?                   @db.Text
+  datos                     Json?                     @db.JsonB
+  interpretacion            String?                   @db.Text
+  fecha                     DateTime?                 @db.Date
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@index([aislamientoId])
+  @@index([tecnica])
+  @@map("caracterizaciones_estructurales")
+}
+
+model Bioensayo {
+  id                        String                    @id @default(cuid())
+  codigo                    String                    @unique
+  tipo                      TipoBioensayo
+  objetivo                  String
+  modeloExperimental        String?
+  organismoModelo           String?
+  protocolo                 String?                   @db.Text
+  endpoint                  String?
+  condiciones               String?                   @db.Text
+  fechaInicio               DateTime?                 @db.Date
+  fechaFin                  DateTime?                 @db.Date
+  resultados                ResultadoBioensayo[]
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+  updatedAt                 DateTime                  @updatedAt
+
+  @@index([tipo])
+  @@index([fechaInicio])
+  @@map("bioensayos")
+}
+
+model ResultadoBioensayo {
+  id                        String                    @id @default(cuid())
+  bioensayoId               String
+  bioensayo                 Bioensayo                 @relation(fields: [bioensayoId], references: [id], onDelete: Cascade)
+  extractoId                String?
+  extracto                  Extracto?                 @relation(fields: [extractoId], references: [id], onDelete: Restrict)
+  fraccionId                String?
+  fraccion                  Fraccion?                 @relation(fields: [fraccionId], references: [id], onDelete: Restrict)
+  moleculaId                String?
+  molecula                  Molecula?                 @relation(fields: [moleculaId], references: [id], onDelete: Restrict)
+  concentracion             Decimal?                  @db.Decimal(14, 6)
+  unidadConcentracion       String?
+  valor                     Decimal?                  @db.Decimal(18, 8)
+  unidadResultado           String?
+  desviacionEstandar        Decimal?                  @db.Decimal(18, 8)
+  replicados                Int?
+  interpretacion            String?                   @db.Text
+  referenciasBibliograficas ReferenciaBibliografica[]
+  createdAt                 DateTime                  @default(now())
+
+  @@index([bioensayoId])
+  @@index([extractoId])
+  @@index([fraccionId])
+  @@index([moleculaId])
+  @@map("resultados_bioensayo")
+}
+
+model ReferenciaBibliografica {
+  id                String                       @id @default(cuid())
+  titulo            String
+  autores           String?                      @db.Text
+  anio              Int?
+  revista           String?
+  volumen           String?
+  numero            String?
+  paginas           String?
+  doi               String?                      @unique
+  url               String?
+  especies          Especie[]
+  muestras          MuestraBotanica[]
+  identificaciones  IdentificacionBotanica[]
+  extractos         Extracto[]
+  fracciones        Fraccion[]
+  moleculas         Molecula[]
+  aislamientos      Aislamiento[]
+  caracterizaciones CaracterizacionEstructural[]
+  bioensayos        Bioensayo[]
+  resultados        ResultadoBioensayo[]
+  createdAt         DateTime                     @default(now())
+  updatedAt         DateTime                     @updatedAt
+
+  @@index([titulo])
+  @@index([anio])
+  @@map("referencias_bibliograficas")
 }
 
 model ArchivoMolecula {

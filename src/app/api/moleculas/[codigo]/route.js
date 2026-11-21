@@ -63,7 +63,7 @@ export async function PATCH(request, context) {
       return NextResponse.json({ message: "No se encontró la molécula." }, { status: 404 });
     }
     if (error?.code === "P2002") {
-      return NextResponse.json({ message: "Ya existe una molécula con ese código." }, { status: 409 });
+      return NextResponse.json({ message: "Ya existe una molécula con ese código o identificador químico." }, { status: 409 });
     }
     console.error("No se pudo actualizar la molécula:", error);
     return NextResponse.json({ message: "No se pudo actualizar la molécula." }, { status: 500 });
