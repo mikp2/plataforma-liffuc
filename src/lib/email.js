@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 function getSmtpConfig() {
   const host = process.env.SMTP_HOST?.trim();
@@ -21,6 +22,28 @@ function getSmtpConfig() {
     ...(user ? { auth: { user, pass: password } } : {}),
     from,
   };
+}
+
+function getEmailProvider() {
+  const provider = process.env.EMAIL_PROVIDER?.trim().toLowerCase() || "smtp";
+  if (provider !== "smtp" && provider !== "resend") {
+    throw new Error("EMAIL_PROVIDER debe ser \"smtp\" o \"resend\".");
+  }
+  return provider;
+}
+
+function getResendConfig() {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  const from = process.env.EMAIL_FROM?.trim() || process.env.SMTP_FROM?.trim();
+
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY no está configurado.");
+  }
+  if (!from) {
+    throw new Error("EMAIL_FROM o SMTP_FROM deben estar configurados para el remitente.");
+  }
+
+  return { apiKey, from };
 }
 
 function escapeHtml(value) {
@@ -82,6 +105,26 @@ function getActionUrl(path, token) {
 }
 
 async function sendEmail({ to, subject, text, html }) {
+  if (getEmailProvider() === "resend") {
+    const config = getResendConfig();
+    const resend = new Resend(config.apiKey);
+    const { data, error } = await resend.emails.send({
+      from: config.from,
+      to: [to],
+      subject,
+      text,
+      html,
+    });
+
+    if (error) {
+      throw new Error(`Resend rechazó el envío: ${error.message}`);
+    }
+    if (!data?.id) {
+      throw new Error("Resend no devolvió un identificador de correo.");
+    }
+    return;
+  }
+
   const config = getSmtpConfig();
   const transporter = nodemailer.createTransport({
     host: config.host,
